@@ -16,8 +16,10 @@ This repository contains the Phase 2 starter Flutter project.
 
 * `lib/main.dart`: app entry point.
 * `lib/theme.dart`: app colors and styles (Material 3), taken from our Figma design.
-* `lib/screens/`: the main screens (Login, Home, Listing Detail, Post Listing, Messages, Profile).
+* `lib/screens/`: one file per screen (Login, Home, Listing Detail, Post Listing, Messages, Profile). These files are still empty placeholders.
 * `lib/widgets/`: shared widgets used by many screens (listing card, status badge, empty state).
+* `test/`: widget tests (currently the default Flutter starter test).
+* `web/`: files needed to run the app in a browser (icons, `index.html`, `manifest.json`).
 
 ## Links
 
