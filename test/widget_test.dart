@@ -1,10 +1,12 @@
 import 'package:flutter_test/flutter_test.dart';
-
 import 'package:souq/main.dart';
+
+import 'fake_listing_repository.dart';
 
 void main() {
   testWidgets('App opens on the Login screen', (WidgetTester tester) async {
-    await tester.pumpWidget(const SouqApp());
+    await tester.pumpWidget(SouqApp(repository: FakeListingRepository()));
+    await tester.pumpAndSettle();
     expect(find.text('Souq - Login'), findsOneWidget);
     expect(find.text('Log in'), findsOneWidget);
   });
