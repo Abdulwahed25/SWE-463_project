@@ -10,6 +10,7 @@ import 'listing_repository.dart';
 /// It will be replaced by Firestore in Phase 4.
 class LocalListingRepository implements ListingRepository {
   static const String _key = 'souq_listings_v1';
+  static const String _favoritesKey = 'souq_favorites_v1';
 
   // Small delay so the loading state can be seen, like a real network call.
   static const Duration _delay = Duration(milliseconds: 600);
@@ -46,6 +47,18 @@ class LocalListingRepository implements ListingRepository {
     if (index == -1) throw Exception('Listing not found');
     all[index] = listing;
     await _save(prefs, all);
+  }
+
+  @override
+  Future<Set<String>> fetchFavoriteIds() async {
+    final prefs = await SharedPreferences.getInstance();
+    return (prefs.getStringList(_favoritesKey) ?? []).toSet();
+  }
+
+  @override
+  Future<void> saveFavoriteIds(Set<String> ids) async {
+    final prefs = await SharedPreferences.getInstance();
+    await prefs.setStringList(_favoritesKey, ids.toList());
   }
 
   Future<List<Listing>> _read(SharedPreferences prefs) async {

@@ -27,12 +27,22 @@ class ListingsProvider extends ChangeNotifier {
   String? _error;
   String _search = '';
   ListingFilter _filter = const ListingFilter();
+  Set<String> _favoriteIds = {};
 
   bool get isLoading => _isLoading;
   String? get error => _error;
   String get search => _search;
   ListingFilter get filter => _filter;
   bool get hasLoaded => _all.isNotEmpty;
+
+  bool isFavorite(String id) => _favoriteIds.contains(id);
+
+  /// Saved listings, newest first.
+  List<Listing> get favorites {
+    final saved = _all.where((l) => _favoriteIds.contains(l.id)).toList();
+    saved.sort((a, b) => b.createdAt.compareTo(a.createdAt));
+    return saved;
+  }
 
   /// Listings shown on Home after search and filters, newest first.
   List<Listing> get visibleListings {
@@ -75,6 +85,7 @@ class ListingsProvider extends ChangeNotifier {
     notifyListeners();
     try {
       _all = await _repository.fetchListings();
+      _favoriteIds = await _repository.fetchFavoriteIds();
     } catch (e) {
       _error = 'Check your connection and try again.';
     }
@@ -117,6 +128,15 @@ class ListingsProvider extends ChangeNotifier {
     await _repository.updateListing(updated);
     _all = [for (final l in _all) l.id == id ? updated : l];
     notifyListeners();
+  }
+
+  /// Adds or removes a listing from favorites and saves the change.
+  Future<void> toggleFavorite(String id) async {
+    final updated = {..._favoriteIds};
+    if (!updated.remove(id)) updated.add(id);
+    _favoriteIds = updated; // update the UI right away
+    notifyListeners();
+    await _repository.saveFavoriteIds(updated);
   }
 
   void setSearch(String text) {

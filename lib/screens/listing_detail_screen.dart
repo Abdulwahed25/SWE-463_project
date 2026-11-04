@@ -60,8 +60,19 @@ class ListingDetailScreen extends StatelessWidget {
     final isMine = provider.isMine(listing);
     final text = Theme.of(context).textTheme;
 
+    final saved = provider.isFavorite(listing.id);
+
     return Scaffold(
-      appBar: AppBar(title: const Text('Listing')),
+      appBar: AppBar(
+        title: const Text('Listing'),
+        actions: [
+          IconButton(
+            tooltip: saved ? 'Remove from saved' : 'Save',
+            icon: Icon(saved ? Icons.favorite : Icons.favorite_border),
+            onPressed: () => provider.toggleFavorite(listing.id),
+          ),
+        ],
+      ),
       body: ListView(
         children: [
           // Photo placeholder

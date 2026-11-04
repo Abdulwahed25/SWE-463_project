@@ -10,4 +10,9 @@ abstract class ListingRepository {
   Future<void> addListing(Listing listing);
 
   Future<void> updateListing(Listing listing);
+
+  /// Ids of the listings the user saved with the heart button.
+  Future<Set<String>> fetchFavoriteIds();
+
+  Future<void> saveFavoriteIds(Set<String> ids);
 }

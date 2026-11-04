@@ -26,6 +26,16 @@ class FakeListingRepository implements ListingRepository {
     final i = _items.indexWhere((l) => l.id == listing.id);
     _items[i] = listing;
   }
+
+  Set<String> savedFavorites = {};
+
+  @override
+  Future<Set<String>> fetchFavoriteIds() async => {...savedFavorites};
+
+  @override
+  Future<void> saveFavoriteIds(Set<String> ids) async {
+    savedFavorites = {...ids};
+  }
 }
 
 Listing testListing(String id, String title, double price, String category,

@@ -19,6 +19,7 @@ class HomeScreen extends StatefulWidget {
 
 class _HomeScreenState extends State<HomeScreen> {
   final _searchController = TextEditingController();
+  bool _savedOnly = false; // local state: show only saved listings
 
   @override
   void dispose() {
@@ -83,6 +84,15 @@ class _HomeScreenState extends State<HomeScreen> {
               scrollDirection: Axis.horizontal,
               padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
               children: [
+                Padding(
+                  padding: const EdgeInsets.only(right: 8),
+                  child: FilterChip(
+                    avatar: const Icon(Icons.favorite, size: 16),
+                    label: const Text('Saved'),
+                    selected: _savedOnly,
+                    onSelected: (v) => setState(() => _savedOnly = v),
+                  ),
+                ),
                 _categoryChip(provider, 'All', null),
                 for (final c in kCategories) _categoryChip(provider, c, c),
               ],
@@ -123,7 +133,20 @@ class _HomeScreenState extends State<HomeScreen> {
         onPressed: provider.load,
       );
     }
-    final listings = provider.visibleListings;
+    var listings = provider.visibleListings;
+    if (_savedOnly) {
+      listings = listings.where((l) => provider.isFavorite(l.id)).toList();
+    }
+    // Empty state for saved listings
+    if (listings.isEmpty && _savedOnly) {
+      return EmptyState(
+        icon: Icons.favorite_border,
+        title: 'No saved listings',
+        message: 'Tap the heart on a listing to save it here.',
+        buttonText: 'Show all listings',
+        onPressed: () => setState(() => _savedOnly = false),
+      );
+    }
     // Empty / no results state
     if (listings.isEmpty) {
       return EmptyState(
@@ -156,6 +179,8 @@ class _HomeScreenState extends State<HomeScreen> {
       price: l.price,
       location: '${l.location} · ${timeAgo(l.createdAt)}',
       isSold: l.isSold,
+      isFavorite: context.read<ListingsProvider>().isFavorite(l.id),
+      onFavorite: () => context.read<ListingsProvider>().toggleFavorite(l.id),
       onTap: () => Navigator.pushNamed(context, AppRoutes.listingDetail, arguments: l.id),
     );
   }

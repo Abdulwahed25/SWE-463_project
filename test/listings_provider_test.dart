@@ -64,4 +64,16 @@ void main() {
     await provider.markAsSold('1');
     expect(provider.byId('1')!.isSold, true);
   });
+
+  test('toggleFavorite() saves and removes a favorite', () async {
+    await provider.load();
+    await provider.toggleFavorite('2');
+    expect(provider.isFavorite('2'), true);
+    expect(repo.savedFavorites, {'2'});
+    expect(provider.favorites.map((l) => l.id), ['2']);
+
+    await provider.toggleFavorite('2');
+    expect(provider.isFavorite('2'), false);
+    expect(repo.savedFavorites, isEmpty);
+  });
 }
