@@ -47,9 +47,9 @@ No account, key or password is needed. The first time the app opens it adds 6 sa
 | Browse, search and filter listings (category, max price, available only) | Implemented | Home |
 | Listing status: available or sold (badge, Mark as sold, My Listings tabs) | Implemented | Listing Detail, My Listings |
 | Favorites (save with the heart, "Saved" filter) | Implemented (optional feature) | Home, Listing Detail |
-| User accounts and profiles | In progress | Login, Sign Up, Profile |
+| User accounts and profiles (KFUPM email validation, local storage session) | Implemented | Login, Sign Up, Profile |
+| IBAN quick-transfer helper (edit & copy IBAN) | Implemented | Edit Profile, Profile |
 | In-app messaging | In progress | Messages, Chat |
-| IBAN quick-transfer helper | In progress | Edit Profile, Listing Detail |
 
 ### How to test the main flow
 
