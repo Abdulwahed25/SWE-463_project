@@ -1,9 +1,16 @@
-/// TEMPORARY current user for Phase 3.
-/// Listings posted in the app are saved with this seller.
-/// It will be replaced by the signed-in user from AuthProvider.
+import '../models/user.dart';
+
+/// Active user session information.
+/// Listings posted in the app are tagged with this seller.
 class Session {
   Session._();
 
-  static const String currentUserId = 'me';
-  static const String currentUserName = 'You';
+  static User? currentUser;
+
+  static String get currentUserId => currentUser?.id ?? 'me';
+  static String get currentUserName => currentUser?.name ?? 'You';
+
+  static void setUser(User? user) {
+    currentUser = user;
+  }
 }
