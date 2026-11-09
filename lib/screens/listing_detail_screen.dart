@@ -3,8 +3,10 @@ import 'package:provider/provider.dart';
 
 import '../app_routes.dart';
 import '../models/listing.dart';
+import '../providers/auth_provider.dart';
 import '../providers/listings_provider.dart';
 import '../theme.dart';
+import '../utils/auth_dialog.dart';
 import '../utils/format.dart';
 import '../widgets/empty_state.dart';
 import '../widgets/status_badge.dart';
@@ -69,7 +71,18 @@ class ListingDetailScreen extends StatelessWidget {
           IconButton(
             tooltip: saved ? 'Remove from saved' : 'Save',
             icon: Icon(saved ? Icons.favorite : Icons.favorite_border),
-            onPressed: () => provider.toggleFavorite(listing.id),
+            onPressed: () {
+              final auth = context.read<AuthProvider>();
+              if (!auth.isAuthenticated) {
+                showLoginPrompt(
+                  context,
+                  title: 'Login to Save',
+                  message: 'You need an account to save favorite items.',
+                );
+                return;
+              }
+              provider.toggleFavorite(listing.id);
+            },
           ),
         ],
       ),
@@ -137,16 +150,40 @@ class ListingDetailScreen extends StatelessWidget {
     }
     return [
       FilledButton(
-        onPressed: listing.isSold ? null : () => Navigator.pushNamed(context, AppRoutes.chat),
+        onPressed: listing.isSold
+            ? null
+            : () {
+                final auth = context.read<AuthProvider>();
+                if (!auth.isAuthenticated) {
+                  showLoginPrompt(
+                    context,
+                    title: 'Login to Message',
+                    message: 'You must be logged in to chat with the seller and buy items.',
+                  );
+                  return;
+                }
+                Navigator.pushNamed(context, AppRoutes.chat);
+              },
         child: Text(listing.isSold ? 'This item is sold' : 'Message seller'),
       ),
       const SizedBox(height: 12),
       OutlinedButton(
         onPressed: listing.isSold
             ? null
-            : () => ScaffoldMessenger.of(context).showSnackBar(
+            : () {
+                final auth = context.read<AuthProvider>();
+                if (!auth.isAuthenticated) {
+                  showLoginPrompt(
+                    context,
+                    title: 'Login Required',
+                    message: 'Please log in to view and copy seller payment information.',
+                  );
+                  return;
+                }
+                ScaffoldMessenger.of(context).showSnackBar(
                   const SnackBar(content: Text('IBAN copied to clipboard')),
-                ),
+                );
+              },
         child: const Text('Copy IBAN'),
       ),
     ];

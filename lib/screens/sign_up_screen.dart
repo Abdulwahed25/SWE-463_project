@@ -163,20 +163,20 @@ class _SignUpScreenState extends State<SignUpScreen> {
                   ),
                   const SizedBox(height: 14),
 
-                  // KFUPM Email
-                  const Text('KFUPM Email *', style: TextStyle(fontSize: 13, fontWeight: FontWeight.w600)),
+                  // Email
+                  const Text('Email *', style: TextStyle(fontSize: 13, fontWeight: FontWeight.w600)),
                   const SizedBox(height: 6),
                   TextFormField(
                     controller: _emailController,
                     keyboardType: TextInputType.emailAddress,
                     textInputAction: TextInputAction.next,
                     decoration: const InputDecoration(
-                      hintText: 's202500123@kfupm.edu.sa',
+                      hintText: 'e.g. name@example.com',
                       prefixIcon: Icon(Icons.email_outlined, color: SouqColors.subText),
                     ),
                     validator: (val) {
                       final text = val?.trim().toLowerCase() ?? '';
-                      if (text.isEmpty) return 'Please enter your university email.';
+                      if (text.isEmpty) return 'Please enter your email.';
                       if (!text.contains('@') || !text.contains('.')) {
                         return 'Please enter a valid email address.';
                       }

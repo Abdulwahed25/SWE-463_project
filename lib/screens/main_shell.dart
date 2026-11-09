@@ -1,6 +1,9 @@
 import 'package:flutter/material.dart';
+import 'package:provider/provider.dart';
 
 import '../app_routes.dart';
+import '../providers/auth_provider.dart';
+import '../utils/auth_dialog.dart';
 import 'home_screen.dart';
 import 'messages_screen.dart';
 import 'profile_screen.dart';
@@ -24,6 +27,15 @@ class _MainShellState extends State<MainShell> {
 
   void _onTap(int index) {
     if (index == 1) {
+      final auth = context.read<AuthProvider>();
+      if (!auth.isAuthenticated) {
+        showLoginPrompt(
+          context,
+          title: 'Login to Post',
+          message: 'You must be logged in to create and post listings for other students.',
+        );
+        return;
+      }
       Navigator.pushNamed(context, AppRoutes.postListing);
       return;
     }

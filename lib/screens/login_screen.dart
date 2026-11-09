@@ -191,14 +191,14 @@ class _LoginScreenState extends State<LoginScreen> {
                   ],
 
                   // Email Field
-                  const Text('KFUPM Email', style: TextStyle(fontSize: 13, fontWeight: FontWeight.w600)),
+                  const Text('Email', style: TextStyle(fontSize: 13, fontWeight: FontWeight.w600)),
                   const SizedBox(height: 6),
                   TextFormField(
                     controller: _emailController,
                     keyboardType: TextInputType.emailAddress,
                     textInputAction: TextInputAction.next,
                     decoration: const InputDecoration(
-                      hintText: 'e.g. s202500123@kfupm.edu.sa',
+                      hintText: 'e.g. name@example.com',
                       prefixIcon: Icon(Icons.email_outlined, color: SouqColors.subText),
                     ),
                     validator: (val) {
@@ -280,6 +280,33 @@ class _LoginScreenState extends State<LoginScreen> {
                         ),
                       ),
                     ],
+                  ),
+                  const SizedBox(height: 20),
+
+                  // Divider
+                  Row(
+                    children: const [
+                      Expanded(child: Divider()),
+                      Padding(
+                        padding: EdgeInsets.symmetric(horizontal: 12),
+                        child: Text(
+                          'OR',
+                          style: TextStyle(color: SouqColors.hint, fontSize: 12, fontWeight: FontWeight.w600),
+                        ),
+                      ),
+                      Expanded(child: Divider()),
+                    ],
+                  ),
+                  const SizedBox(height: 16),
+
+                  // Continue as Guest Button
+                  OutlinedButton.icon(
+                    onPressed: () {
+                      auth.clearError();
+                      Navigator.pushReplacementNamed(context, AppRoutes.home);
+                    },
+                    icon: const Icon(Icons.person_outline, size: 20),
+                    label: const Text('Continue as Guest'),
                   ),
                 ],
               ),

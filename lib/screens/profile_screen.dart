@@ -4,7 +4,6 @@ import 'package:provider/provider.dart';
 
 import '../app_routes.dart';
 import '../providers/auth_provider.dart';
-import '../services/session.dart';
 import '../theme.dart';
 
 class ProfileScreen extends StatelessWidget {
@@ -38,8 +37,15 @@ class ProfileScreen extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final auth = context.watch<AuthProvider>();
-    final user = auth.user ?? Session.currentUser;
+    if (!auth.isAuthenticated) {
+      return Scaffold(
+        backgroundColor: SouqColors.background,
+        appBar: AppBar(title: const Text('Profile')),
+        body: _buildGuestProfile(context),
+      );
+    }
 
+    final user = auth.user;
     final displayName = user?.name.isNotEmpty == true ? user!.name : 'KFUPM Student';
     final email = user?.email.isNotEmpty == true ? user!.email : 'Not logged in';
     final studentId = user?.studentId.isNotEmpty == true ? user!.studentId : '—';
@@ -200,6 +206,101 @@ class ProfileScreen extends StatelessWidget {
           ],
         ),
       ),
+    );
+  }
+  Widget _buildGuestProfile(BuildContext context) {
+    return Center(
+      child: SingleChildScrollView(
+        padding: const EdgeInsets.all(24),
+        child: Column(
+          mainAxisAlignment: MainAxisAlignment.center,
+          children: [
+            Container(
+              width: 80,
+              height: 80,
+              decoration: BoxDecoration(
+                color: SouqColors.teal.withValues(alpha: 0.1),
+                shape: BoxShape.circle,
+              ),
+              child: const Icon(
+                Icons.person_outline,
+                size: 44,
+                color: SouqColors.teal,
+              ),
+            ),
+            const SizedBox(height: 18),
+            const Text(
+              'Guest Account',
+              style: TextStyle(
+                fontSize: 22,
+                fontWeight: FontWeight.bold,
+                color: SouqColors.text,
+              ),
+            ),
+            const SizedBox(height: 8),
+            const Text(
+              'You are browsing Souq as a guest. Create an account or log in to unlock all features.',
+              textAlign: TextAlign.center,
+              style: TextStyle(fontSize: 14, color: SouqColors.subText),
+            ),
+            const SizedBox(height: 24),
+            Container(
+              padding: const EdgeInsets.all(16),
+              decoration: BoxDecoration(
+                color: Colors.white,
+                borderRadius: BorderRadius.circular(kSouqRadius),
+                boxShadow: [
+                  BoxShadow(
+                    color: Colors.black.withValues(alpha: 0.04),
+                    blurRadius: 10,
+                    offset: const Offset(0, 2),
+                  ),
+                ],
+              ),
+              child: Column(
+                children: const [
+                  _FeatureRow(icon: Icons.add_box_outlined, text: 'Post listings to sell items'),
+                  SizedBox(height: 12),
+                  _FeatureRow(icon: Icons.chat_bubble_outline, text: 'Chat and message sellers directly'),
+                  SizedBox(height: 12),
+                  _FeatureRow(icon: Icons.favorite_border, text: 'Save items to your wishlist'),
+                  SizedBox(height: 12),
+                  _FeatureRow(icon: Icons.account_balance_outlined, text: 'Receive payments with your IBAN'),
+                ],
+              ),
+            ),
+            const SizedBox(height: 24),
+            FilledButton.icon(
+              onPressed: () => Navigator.pushNamed(context, AppRoutes.login),
+              icon: const Icon(Icons.login),
+              label: const Text('Log in / Sign up'),
+            ),
+          ],
+        ),
+      ),
+    );
+  }
+}
+
+class _FeatureRow extends StatelessWidget {
+  const _FeatureRow({required this.icon, required this.text});
+
+  final IconData icon;
+  final String text;
+
+  @override
+  Widget build(BuildContext context) {
+    return Row(
+      children: [
+        Icon(icon, size: 20, color: SouqColors.teal),
+        const SizedBox(width: 12),
+        Expanded(
+          child: Text(
+            text,
+            style: const TextStyle(fontSize: 13, color: SouqColors.text),
+          ),
+        ),
+      ],
     );
   }
 }

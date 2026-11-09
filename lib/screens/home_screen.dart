@@ -4,7 +4,9 @@ import 'package:provider/provider.dart';
 import '../app_routes.dart';
 import '../models/category.dart';
 import '../models/listing.dart';
+import '../providers/auth_provider.dart';
 import '../providers/listings_provider.dart';
+import '../utils/auth_dialog.dart';
 import '../utils/format.dart';
 import '../widgets/empty_state.dart';
 import '../widgets/listing_card.dart';
@@ -180,7 +182,18 @@ class _HomeScreenState extends State<HomeScreen> {
       location: '${l.location} · ${timeAgo(l.createdAt)}',
       isSold: l.isSold,
       isFavorite: context.read<ListingsProvider>().isFavorite(l.id),
-      onFavorite: () => context.read<ListingsProvider>().toggleFavorite(l.id),
+      onFavorite: () {
+        final auth = context.read<AuthProvider>();
+        if (!auth.isAuthenticated) {
+          showLoginPrompt(
+            context,
+            title: 'Login to Save',
+            message: 'You need an account to save favorite items to your wishlist.',
+          );
+          return;
+        }
+        context.read<ListingsProvider>().toggleFavorite(l.id);
+      },
       onTap: () => Navigator.pushNamed(context, AppRoutes.listingDetail, arguments: l.id),
     );
   }
