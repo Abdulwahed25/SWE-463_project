@@ -1,28 +1,232 @@
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
+import 'package:provider/provider.dart';
 
 import '../app_routes.dart';
-import '../widgets/placeholder_page.dart';
+import '../providers/auth_provider.dart';
+import '../services/session.dart';
+import '../theme.dart';
 
 class ProfileScreen extends StatelessWidget {
   const ProfileScreen({super.key});
 
-  @override
-  Widget build(BuildContext context) {
-    return Scaffold(
-      appBar: AppBar(title: const Text('Profile')),
-      body: PlaceholderPage(
-        icon: Icons.person_outline,
-        title: 'Profile',
-        message: 'Name, email, phone, student ID and IBAN will be shown here.',
+  void _confirmLogout(BuildContext context) {
+    showDialog(
+      context: context,
+      builder: (ctx) => AlertDialog(
+        title: const Text('Log out'),
+        content: const Text('Are you sure you want to log out of Souq?'),
         actions: [
-          PlaceholderAction('Edit profile', () => Navigator.pushNamed(context, AppRoutes.editProfile), primary: true),
-          PlaceholderAction('My listings', () => Navigator.pushNamed(context, AppRoutes.myListings)),
-          PlaceholderAction(
-            'Log out',
-            () => Navigator.pushNamedAndRemoveUntil(context, AppRoutes.login, (route) => false),
+          TextButton(
+            onPressed: () => Navigator.pop(ctx),
+            child: const Text('Cancel'),
+          ),
+          FilledButton(
+            onPressed: () async {
+              Navigator.pop(ctx);
+              await context.read<AuthProvider>().logout();
+              if (!context.mounted) return;
+              Navigator.pushNamedAndRemoveUntil(context, AppRoutes.login, (route) => false);
+            },
+            child: const Text('Log out'),
           ),
         ],
       ),
+    );
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    final auth = context.watch<AuthProvider>();
+    final user = auth.user ?? Session.currentUser;
+
+    final displayName = user?.name.isNotEmpty == true ? user!.name : 'KFUPM Student';
+    final email = user?.email.isNotEmpty == true ? user!.email : 'Not logged in';
+    final studentId = user?.studentId.isNotEmpty == true ? user!.studentId : '—';
+    final phone = user?.phone.isNotEmpty == true ? user!.phone : 'Not provided';
+    final iban = user?.iban.isNotEmpty == true ? user!.iban : 'Not provided';
+
+    return Scaffold(
+      backgroundColor: SouqColors.background,
+      appBar: AppBar(
+        title: const Text('Profile'),
+      ),
+      body: SingleChildScrollView(
+        padding: const EdgeInsets.all(20),
+        child: Column(
+          children: [
+            // User Avatar Card
+            Container(
+              width: double.infinity,
+              padding: const EdgeInsets.symmetric(vertical: 24, horizontal: 16),
+              decoration: BoxDecoration(
+                color: Colors.white,
+                borderRadius: BorderRadius.circular(kSouqRadius),
+                boxShadow: [
+                  BoxShadow(
+                    color: Colors.black.withValues(alpha: 0.04),
+                    blurRadius: 10,
+                    offset: const Offset(0, 2),
+                  ),
+                ],
+              ),
+              child: Column(
+                children: [
+                  CircleAvatar(
+                    radius: 40,
+                    backgroundColor: SouqColors.teal.withValues(alpha: 0.12),
+                    child: Text(
+                      displayName.isNotEmpty ? displayName[0].toUpperCase() : 'U',
+                      style: const TextStyle(
+                        fontSize: 32,
+                        fontWeight: FontWeight.bold,
+                        color: SouqColors.teal,
+                      ),
+                    ),
+                  ),
+                  const SizedBox(height: 14),
+                  Text(
+                    displayName,
+                    style: const TextStyle(
+                      fontSize: 20,
+                      fontWeight: FontWeight.bold,
+                      color: SouqColors.text,
+                    ),
+                  ),
+                  const SizedBox(height: 4),
+                  Text(
+                    email,
+                    style: const TextStyle(
+                      fontSize: 14,
+                      color: SouqColors.subText,
+                    ),
+                  ),
+                ],
+              ),
+            ),
+            const SizedBox(height: 18),
+
+            // Profile Details Section
+            Container(
+              decoration: BoxDecoration(
+                color: Colors.white,
+                borderRadius: BorderRadius.circular(kSouqRadius),
+                boxShadow: [
+                  BoxShadow(
+                    color: Colors.black.withValues(alpha: 0.04),
+                    blurRadius: 10,
+                    offset: const Offset(0, 2),
+                  ),
+                ],
+              ),
+              child: Column(
+                children: [
+                  _InfoTile(
+                    icon: Icons.badge_outlined,
+                    label: 'Student ID',
+                    value: studentId,
+                  ),
+                  const Divider(height: 1, indent: 56),
+                  _InfoTile(
+                    icon: Icons.phone_outlined,
+                    label: 'Phone Number',
+                    value: phone,
+                  ),
+                  const Divider(height: 1, indent: 56),
+                  _InfoTile(
+                    icon: Icons.account_balance_outlined,
+                    label: 'Bank IBAN',
+                    value: iban,
+                    trailing: user?.iban.isNotEmpty == true
+                        ? IconButton(
+                            icon: const Icon(Icons.copy_outlined, size: 18, color: SouqColors.teal),
+                            onPressed: () {
+                              Clipboard.setData(ClipboardData(text: user!.iban));
+                              ScaffoldMessenger.of(context).showSnackBar(
+                                const SnackBar(content: Text('IBAN copied to clipboard')),
+                              );
+                            },
+                          )
+                        : null,
+                  ),
+                ],
+              ),
+            ),
+            const SizedBox(height: 18),
+
+            // Quick Actions Section
+            Container(
+              decoration: BoxDecoration(
+                color: Colors.white,
+                borderRadius: BorderRadius.circular(kSouqRadius),
+                boxShadow: [
+                  BoxShadow(
+                    color: Colors.black.withValues(alpha: 0.04),
+                    blurRadius: 10,
+                    offset: const Offset(0, 2),
+                  ),
+                ],
+              ),
+              child: Column(
+                children: [
+                  ListTile(
+                    leading: const Icon(Icons.edit_outlined, color: SouqColors.teal),
+                    title: const Text('Edit Profile & IBAN', style: TextStyle(fontWeight: FontWeight.w500)),
+                    trailing: const Icon(Icons.arrow_forward_ios, size: 16, color: SouqColors.hint),
+                    onTap: () => Navigator.pushNamed(context, AppRoutes.editProfile),
+                  ),
+                  const Divider(height: 1, indent: 56),
+                  ListTile(
+                    leading: const Icon(Icons.list_alt_outlined, color: SouqColors.teal),
+                    title: const Text('My Listings', style: TextStyle(fontWeight: FontWeight.w500)),
+                    trailing: const Icon(Icons.arrow_forward_ios, size: 16, color: SouqColors.hint),
+                    onTap: () => Navigator.pushNamed(context, AppRoutes.myListings),
+                  ),
+                ],
+              ),
+            ),
+            const SizedBox(height: 24),
+
+            // Log Out Button
+            OutlinedButton.icon(
+              icon: const Icon(Icons.logout, color: SouqColors.error),
+              label: const Text('Log out', style: TextStyle(color: SouqColors.error)),
+              style: OutlinedButton.styleFrom(
+                side: const BorderSide(color: SouqColors.error),
+                backgroundColor: Colors.white,
+              ),
+              onPressed: () => _confirmLogout(context),
+            ),
+          ],
+        ),
+      ),
+    );
+  }
+}
+
+class _InfoTile extends StatelessWidget {
+  const _InfoTile({
+    required this.icon,
+    required this.label,
+    required this.value,
+    this.trailing,
+  });
+
+  final IconData icon;
+  final String label;
+  final String value;
+  final Widget? trailing;
+
+  @override
+  Widget build(BuildContext context) {
+    return ListTile(
+      leading: Icon(icon, color: SouqColors.subText),
+      title: Text(label, style: const TextStyle(fontSize: 12, color: SouqColors.subText)),
+      subtitle: Text(
+        value,
+        style: const TextStyle(fontSize: 14, fontWeight: FontWeight.w600, color: SouqColors.text),
+      ),
+      trailing: trailing,
     );
   }
 }
