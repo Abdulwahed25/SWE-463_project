@@ -48,7 +48,9 @@ No account, key or password is needed. The first time the app opens it adds 6 sa
 | Listing status: available or sold (badge, Mark as sold, My Listings tabs) | Implemented | Listing Detail, My Listings |
 | Favorites (save with the heart, "Saved" filter) | Implemented (optional feature) | Home, Listing Detail |
 | User accounts and profiles (KFUPM email validation, local storage session) | Implemented | Login, Sign Up, Profile |
-| IBAN quick-transfer helper (edit & copy IBAN) | Implemented | Edit Profile, Profile |
+| Profile (account details, Posted / Sold / Saved stats, IBAN reminder) | Implemented | Profile |
+| Edit profile (country code picker, phone and IBAN formatted while typing and validated, unsaved-changes warning) | Implemented | Edit Profile, Sign Up (phone) |
+| IBAN quick-transfer helper (seller's IBAN sheet on a listing, copy IBAN) | Implemented | Edit Profile, Profile, Listing Detail |
 | In-app messaging | In progress | Messages, Chat |
 
 ### How to test the main flow
@@ -59,6 +61,18 @@ No account, key or password is needed. The first time the app opens it adds 6 sa
 4. Fill in the form and press **Post listing**. The button shows "Posting...", then the success screen opens.
 5. Press **Back to Home**: the new listing is first in the list. Close and open the app again: it is still there (saved on the device).
 6. Open the listing and press **Mark as sold**: the badge changes to Sold on Home and in My Listings.
+
+### How to test the profile flow
+
+1. Log in with the demo account: `student@kfupm.edu.sa` / `password123`, then open the **Profile** tab.
+2. The card shows Posted / Sold / Saved counts. Post a listing or save one with the heart: the counts change right away.
+3. Press **Edit Profile & IBAN**. **Save changes** stays disabled until you change a field.
+4. Try typing letters in the phone or IBAN field: they are ignored. Digits are grouped while you type (phone `53-034-4226`, IBAN `03 8000 0000 6080 1016 7519` after the fixed `SA`).
+5. Clear the name, type `534` as the phone and `12` as the IBAN, then press **Save changes**: each field shows a red error and nothing is saved. An IBAN with a wrong digit (for example `03 8000 0000 6080 1016 7518`) is also rejected (checksum check).
+6. Tap **+966** to pick another country code (e.g. Kuwait +965): the phone rules and grouping change to that country.
+7. Change something and press the back arrow: a "Discard changes?" dialog appears.
+8. Enter a valid name and IBAN (e.g. `03 8000 0000 6080 1016 7519`) and save. The button shows a spinner, then Profile shows the new name and the IBAN in groups of 4, with a copy button. Restart the app: the changes are still there.
+9. To test buying with IBAN: sign up a second account, add an IBAN and post a listing. Log in with the first account, open that listing and press **Copy IBAN**: a sheet shows the seller's name and IBAN. Sample listings show "No IBAN yet" because their sellers have no accounts.
 
 ## Project Structure
 
@@ -71,8 +85,8 @@ lib/
   providers/                ListingsProvider (shared state with Provider)
   services/                 ListingRepository (interface) and LocalListingRepository
   screens/                  one file per screen
-  widgets/                  reusable widgets (listing card, status badge, empty state)
-  utils/                    price and time formatting
+  widgets/                  reusable widgets (listing card, status badge, empty state, section card, seller payment sheet)
+  utils/                    price and time formatting, IBAN helpers, profile validators
 test/                       provider tests and a widget test
 ```
 
@@ -97,7 +111,9 @@ Planned for Phase 4: firebase_core, firebase_auth, cloud_firestore, firebase_sto
 
 * Data is saved only on the device. Other users cannot see your listings until Firebase is added in Phase 4.
 * Photos cannot be added yet (the photo box shows a message).
-* Login, chat and profile features are still in progress.
+* Chat is still in progress.
+* Changing your name does not update the seller name on listings you posted before the change.
+* The seller's IBAN can only be found if the seller's account is on the same device (local storage). Firestore will fix this in Phase 4.
 
 ## AI Use Disclosure
 
