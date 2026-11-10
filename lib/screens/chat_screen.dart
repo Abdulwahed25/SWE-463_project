@@ -1,7 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 
-import '../providers/auth_provider.dart';
 import '../providers/chat_provider.dart';
 import '../widgets/chat_bubble.dart';
 
@@ -25,6 +24,7 @@ class ChatScreen extends StatefulWidget {
 
 class _ChatScreenState extends State<ChatScreen> {
   final TextEditingController _textController = TextEditingController();
+  static const String _currentUserId = 'my_user_id';
 
   @override
   void initState() {
@@ -44,13 +44,10 @@ class _ChatScreenState extends State<ChatScreen> {
     final text = _textController.text.trim();
     if (text.isEmpty) return;
 
-    final auth = context.read<AuthProvider>();
-    final currentUserId = auth.currentUser?.id ?? 'my_user_id';
-
     context.read<ChatProvider>().sendMessage(
           chatId: widget.chatId,
           text: text,
-          senderId: currentUserId,
+          senderId: _currentUserId,
         );
 
     _textController.clear();
@@ -59,8 +56,6 @@ class _ChatScreenState extends State<ChatScreen> {
   @override
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
-    final auth = context.watch<AuthProvider>();
-    final currentUserId = auth.currentUser?.id ?? 'my_user_id';
     final chatProvider = context.watch<ChatProvider>();
     final messages = chatProvider.activeMessages;
 
@@ -97,7 +92,7 @@ class _ChatScreenState extends State<ChatScreen> {
                       final message = messages[index];
                       return ChatBubble(
                         message: message,
-                        isMe: message.senderId == currentUserId,
+                        isMe: message.senderId == _currentUserId,
                       );
                     },
                   ),

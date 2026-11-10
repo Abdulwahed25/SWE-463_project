@@ -3,10 +3,13 @@ import 'package:provider/provider.dart';
 
 import 'app_routes.dart';
 import 'providers/auth_provider.dart';
+import 'providers/chat_provider.dart';
 import 'providers/listings_provider.dart';
 import 'services/auth_repository.dart';
+import 'services/chat_repository.dart';
 import 'services/listing_repository.dart';
 import 'services/local_auth_repository.dart';
+import 'services/local_chat_repository.dart';
 import 'services/local_listing_repository.dart';
 import 'theme.dart';
 
@@ -14,6 +17,7 @@ void main() {
   runApp(SouqApp(
     repository: LocalListingRepository(),
     authRepository: LocalAuthRepository(),
+    chatRepository: LocalChatRepository(),
   ));
 }
 
@@ -22,6 +26,7 @@ class SouqApp extends StatelessWidget {
     super.key,
     required this.repository,
     this.authRepository,
+    this.chatRepository,
   });
 
   /// Where listings come from. Tests pass a fake repository here.
@@ -29,6 +34,9 @@ class SouqApp extends StatelessWidget {
 
   /// Authentication data source.
   final AuthRepository? authRepository;
+
+  /// Chat data source (added for messaging feature).
+  final ChatRepository? chatRepository;
 
   @override
   Widget build(BuildContext context) {
@@ -39,6 +47,9 @@ class SouqApp extends StatelessWidget {
         ),
         ChangeNotifierProvider(
           create: (_) => ListingsProvider(repository)..load(),
+        ),
+        ChangeNotifierProvider(
+          create: (_) => ChatProvider(chatRepository ?? LocalChatRepository())..loadChats(),
         ),
       ],
       child: MaterialApp(

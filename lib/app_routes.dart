@@ -5,6 +5,7 @@ import 'screens/edit_profile_screen.dart';
 import 'screens/listing_detail_screen.dart';
 import 'screens/login_screen.dart';
 import 'screens/main_shell.dart';
+import 'screens/messages_screen.dart';
 import 'screens/my_listings_screen.dart';
 import 'screens/post_listing_screen.dart';
 import 'screens/posted_screen.dart';
@@ -18,6 +19,7 @@ class AppRoutes {
   static const String signUp = '/sign-up';
   static const String home = '/home'; // main shell with the bottom bar
   static const String listingDetail = '/listing';
+  static const String messages = '/messages';
   static const String chat = '/chat';
   static const String postListing = '/post';
   static const String posted = '/posted';
@@ -29,7 +31,17 @@ class AppRoutes {
         signUp: (_) => const SignUpScreen(),
         home: (_) => const MainShell(),
         listingDetail: (_) => const ListingDetailScreen(),
-        chat: (_) => const ChatScreen(),
+        messages: (_) => const MessagesScreen(),
+        chat: (context) {
+          final args =
+              ModalRoute.of(context)?.settings.arguments as Map<String, dynamic>?;
+          return ChatScreen(
+            chatId: args?['chatId'] ?? 'chat_1',
+            peerName: args?['peerName'] ?? 'Ali (KFUPM Student)',
+            itemTitle: args?['itemTitle'] ?? 'Calculus Book',
+            itemPrice: (args?['itemPrice'] as num?)?.toDouble() ?? 150.0,
+          );
+        },
         postListing: (_) => const PostListingScreen(),
         posted: (_) => const PostedScreen(),
         editProfile: (_) => const EditProfileScreen(),
