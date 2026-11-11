@@ -52,7 +52,7 @@ class ChatProvider extends ChangeNotifier {
   /// Loads the new user's chats, or clears everything after logout.
   void setUser(User? user) {
     if (user?.id == _user?.id) {
-      _user = user; // same person, maybe a new name
+      _user = user;
       return;
     }
     _user = user;
@@ -60,8 +60,7 @@ class ChatProvider extends ChangeNotifier {
     _activeChatId = null;
     _activeMessages = [];
     _errorMessage = null;
-    // setUser runs while widgets are being built, and a provider must not
-    // notify during a build. So we load (or refresh) right after the build.
+
     Future.microtask(() {
       if (_disposed) return;
       if (_user == null) {
@@ -83,7 +82,7 @@ class ChatProvider extends ChangeNotifier {
 
     try {
       final chats = await _repository.fetchChats(id);
-      if (currentUserId != id) return; // user changed while loading
+      if (currentUserId != id) return;
       _chats = chats;
     } catch (e) {
       _errorMessage = 'Could not load your chats. Please try again.';
@@ -94,7 +93,6 @@ class ChatProvider extends ChangeNotifier {
   }
 
   /// "Message seller" on a listing: finds or creates the chat and returns it.
-  /// Returns null if nobody is signed in or the user is the seller.
   Future<Chat?> openChatForListing(Listing listing) async {
     final me = _user;
     if (me == null || me.id == listing.sellerId) return null;
@@ -123,7 +121,7 @@ class ChatProvider extends ChangeNotifier {
 
     try {
       final messages = await _repository.fetchMessages(chatId);
-      if (_activeChatId != chatId) return; // user already left this chat
+      if (_activeChatId != chatId) return;
       _activeMessages = messages;
       await _markRead(chatId);
     } catch (e) {
@@ -134,22 +132,26 @@ class ChatProvider extends ChangeNotifier {
     }
   }
 
-  /// Sends a text or image message from the signed-in user.
+  /// Sends a text, image, or video message from the signed-in user.
   Future<bool> sendMessage({
     required String chatId,
     required String text,
     String? imageUrl,
+    String? videoUrl,
   }) async {
     final me = currentUserId;
     final clean = text.trim();
-    final hasImage = imageUrl != null && imageUrl.isNotEmpty;
-    if (me == null || (clean.isEmpty && !hasImage) || _isSending) return false;
+    final hasMedia = (imageUrl != null && imageUrl.isNotEmpty) ||
+        (videoUrl != null && videoUrl.isNotEmpty);
+
+    if (me == null || (clean.isEmpty && !hasMedia) || _isSending) return false;
 
     final message = Message(
       id: DateTime.now().microsecondsSinceEpoch.toString(),
       senderId: me,
       text: clean,
       imageUrl: imageUrl,
+      videoUrl: videoUrl,
       sentAt: DateTime.now(),
     );
 
@@ -160,7 +162,9 @@ class ChatProvider extends ChangeNotifier {
       if (_activeChatId == chatId) {
         _activeMessages = [message, ..._activeMessages];
       }
-      final preview = clean.isNotEmpty ? clean : '📷 Photo';
+      final preview = clean.isNotEmpty
+          ? clean
+          : (videoUrl != null ? '🎥 Video' : '📷 Photo');
       _updateChat(chatId, (c) => c.copyWith(lastMessage: preview, lastMessageAt: message.sentAt));
       _chats.sort((a, b) => b.lastMessageAt.compareTo(a.lastMessageAt));
       return true;
@@ -196,7 +200,6 @@ class ChatProvider extends ChangeNotifier {
     super.dispose();
   }
 
-  /// Async work can finish after the provider is gone; then we stay quiet.
   @override
   void notifyListeners() {
     if (!_disposed) super.notifyListeners();
