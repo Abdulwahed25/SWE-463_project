@@ -3,6 +3,7 @@ class Message {
   final String senderId;
   final String text;
   final String? imageUrl;
+  final String? videoUrl;
   final DateTime sentAt;
 
   const Message({
@@ -10,6 +11,7 @@ class Message {
     required this.senderId,
     required this.text,
     this.imageUrl,
+    this.videoUrl,
     required this.sentAt,
   });
 
@@ -18,6 +20,7 @@ class Message {
       'senderId': senderId,
       'text': text,
       'imageUrl': imageUrl,
+      'videoUrl': videoUrl,
       'sentAt': sentAt.toIso8601String(),
     };
   }
@@ -28,6 +31,7 @@ class Message {
       senderId: map['senderId'] ?? '',
       text: map['text'] ?? '',
       imageUrl: map['imageUrl'],
+      videoUrl: map['videoUrl'],
       sentAt: map['sentAt'] != null
           ? DateTime.tryParse(map['sentAt']) ?? DateTime.now()
           : DateTime.now(),
