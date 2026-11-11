@@ -2,10 +2,13 @@ import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 
 import '../app_routes.dart';
+import '../models/chat.dart';
 import '../providers/chat_provider.dart';
 import '../providers/listings_provider.dart';
 import '../widgets/chat_item_tile.dart';
+import '../widgets/empty_state.dart';
 
+/// Messages tab: the signed-in user's chats, with search.
 class MessagesScreen extends StatefulWidget {
   const MessagesScreen({super.key});
 
@@ -16,7 +19,6 @@ class MessagesScreen extends StatefulWidget {
 class _MessagesScreenState extends State<MessagesScreen> {
   final TextEditingController _searchController = TextEditingController();
   String _searchQuery = '';
-  static const String _currentUserId = 'my_user_id';
 
   @override
   void dispose() {
@@ -29,22 +31,33 @@ class _MessagesScreenState extends State<MessagesScreen> {
     final theme = Theme.of(context);
     final chatProvider = context.watch<ChatProvider>();
     final listingsProvider = context.watch<ListingsProvider>();
+    final myId = chatProvider.currentUserId;
 
+    // Guest: no chats to show.
+    if (myId == null) {
+      return Scaffold(
+        appBar: AppBar(title: const Text('Messages')),
+        body: EmptyState(
+          icon: Icons.lock_outline,
+          title: 'Log in to see your messages',
+          message: 'You need an account to chat with sellers and buyers.',
+          buttonText: 'Log in',
+          onPressed: () => Navigator.pushNamed(context, AppRoutes.login),
+        ),
+      );
+    }
+
+    final query = _searchQuery.trim().toLowerCase();
     final filteredChats = chatProvider.chats.where((chat) {
-      final listing = listingsProvider.byId(chat.listingId);
-      final sellerName = listing?.sellerName ?? 'Ali (KFUPM Student)';
-      final itemTitle = listing?.title ?? 'Calculus Book';
-      final query = _searchQuery.toLowerCase();
-
+      if (query.isEmpty) return true;
+      final itemTitle = listingsProvider.byId(chat.listingId)?.title ?? '';
       return chat.lastMessage.toLowerCase().contains(query) ||
-          sellerName.toLowerCase().contains(query) ||
+          chat.peerName(myId).toLowerCase().contains(query) ||
           itemTitle.toLowerCase().contains(query);
     }).toList();
 
     return Scaffold(
-      appBar: AppBar(
-        title: const Text('Messages'),
-      ),
+      appBar: AppBar(title: const Text('Messages')),
       body: Column(
         children: [
           Padding(
@@ -75,7 +88,10 @@ class _MessagesScreenState extends State<MessagesScreen> {
             ),
           ),
           Expanded(
-            child: _buildBody(context, chatProvider, listingsProvider, filteredChats),
+            child: RefreshIndicator(
+              onRefresh: chatProvider.loadChats,
+              child: _buildBody(context, chatProvider, listingsProvider, filteredChats, myId),
+            ),
           ),
         ],
       ),
@@ -86,94 +102,52 @@ class _MessagesScreenState extends State<MessagesScreen> {
     BuildContext context,
     ChatProvider chatProvider,
     ListingsProvider listingsProvider,
-    List filteredChats,
+    List<Chat> filteredChats,
+    String myId,
   ) {
-    final theme = Theme.of(context);
-
     if (chatProvider.isLoading) {
       return const Center(child: CircularProgressIndicator());
     }
 
     if (chatProvider.errorMessage != null) {
-      return Center(
-        child: Padding(
-          padding: const EdgeInsets.all(24),
-          child: Column(
-            mainAxisSize: MainAxisSize.min,
-            children: [
-              Icon(Icons.error_outline, size: 48, color: theme.colorScheme.error),
-              const SizedBox(height: 12),
-              Text(
-                'Could not load messages',
-                style: theme.textTheme.titleMedium,
-              ),
-              const SizedBox(height: 8),
-              FilledButton(
-                onPressed: () => chatProvider.loadChats(userId: _currentUserId),
-                child: const Text('Try again'),
-              ),
-            ],
-          ),
-        ),
+      return EmptyState(
+        icon: Icons.error_outline,
+        title: 'Could not load messages',
+        message: chatProvider.errorMessage!,
+        buttonText: 'Try again',
+        onPressed: chatProvider.loadChats,
       );
     }
 
     if (filteredChats.isEmpty) {
-      return Center(
-        child: Padding(
-          padding: const EdgeInsets.all(24),
-          child: Column(
-            mainAxisSize: MainAxisSize.min,
-            children: [
-              Icon(
-                Icons.chat_bubble_outline_rounded,
-                size: 64,
-                color: theme.colorScheme.outline,
-              ),
-              const SizedBox(height: 16),
-              Text(
-                _searchQuery.isEmpty ? 'No chats yet' : 'No matching chats',
-                style: theme.textTheme.titleMedium?.copyWith(
-                  fontWeight: FontWeight.bold,
-                ),
-              ),
-              const SizedBox(height: 8),
-              Text(
-                _searchQuery.isEmpty
-                    ? 'When you message a seller, or a buyer messages you, the chat will show up here.'
-                    : 'Try searching with a different keyword.',
-                textAlign: TextAlign.center,
-                style: TextStyle(color: theme.colorScheme.onSurfaceVariant),
-              ),
-              if (_searchQuery.isEmpty) ...[
-                const SizedBox(height: 20),
-                OutlinedButton(
-                  onPressed: () {
-                    Navigator.pushReplacementNamed(context, AppRoutes.home);
-                  },
-                  child: const Text('Browse listings'),
-                ),
-              ],
-            ],
-          ),
-        ),
-      );
+      return _searchQuery.isEmpty
+          ? const EmptyState(
+              icon: Icons.chat_bubble_outline_rounded,
+              title: 'No chats yet',
+              message: 'Open a listing and press "Message seller". Your chats will show up here.',
+            )
+          : const EmptyState(
+              icon: Icons.search_off,
+              title: 'No matching chats',
+              message: 'Try searching with a different keyword.',
+            );
     }
 
     return ListView.separated(
+      physics: const AlwaysScrollableScrollPhysics(), // so pull-to-refresh works
       itemCount: filteredChats.length,
-      separatorBuilder: (_, __) => const Divider(height: 1, indent: 72),
+      separatorBuilder: (context, index) => const Divider(height: 1, indent: 72),
       itemBuilder: (context, index) {
         final chat = filteredChats[index];
         final listing = listingsProvider.byId(chat.listingId);
-        final peerName = listing?.sellerName ?? 'Ali (KFUPM Student)';
-        final itemTitle = listing?.title ?? 'Calculus Book';
-        final itemPrice = listing?.price ?? 150.0;
+        final peerName = chat.peerName(myId);
+        final itemTitle = listing?.title ?? 'Deleted listing';
+        final itemPrice = listing?.price ?? 0;
 
         return ChatItemTile(
           chat: chat,
           peerName: '$peerName • $itemTitle',
-          currentUserId: _currentUserId,
+          currentUserId: myId,
           onTap: () {
             Navigator.pushNamed(
               context,
