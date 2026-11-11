@@ -22,9 +22,14 @@ class ListingDetailScreen extends StatelessWidget {
       context: context,
       builder: (dialogContext) => AlertDialog(
         title: const Text('Mark as sold?'),
-        content: const Text('Buyers will see this item as sold and will not be able to message you about it.'),
+        content: const Text(
+          'Buyers will see this item as sold and will not be able to message you about it.',
+        ),
         actions: [
-          TextButton(onPressed: () => Navigator.pop(dialogContext, false), child: const Text('Cancel')),
+          TextButton(
+            onPressed: () => Navigator.pop(dialogContext, false),
+            child: const Text('Cancel'),
+          ),
           FilledButton(
             style: FilledButton.styleFrom(minimumSize: const Size(100, 44)),
             onPressed: () => Navigator.pop(dialogContext, true),
@@ -36,9 +41,13 @@ class ListingDetailScreen extends StatelessWidget {
     if (ok != true) return;
     try {
       await provider.markAsSold(listing.id);
-      messenger.showSnackBar(const SnackBar(content: Text('Listing marked as sold')));
+      messenger.showSnackBar(
+        const SnackBar(content: Text('Listing marked as sold')),
+      );
     } catch (e) {
-      messenger.showSnackBar(const SnackBar(content: Text("Couldn't update the listing. Try again.")));
+      messenger.showSnackBar(
+        const SnackBar(content: Text("Couldn't update the listing. Try again.")),
+      );
     }
   }
 
@@ -61,7 +70,6 @@ class ListingDetailScreen extends StatelessWidget {
 
     final isMine = provider.isMine(listing);
     final text = Theme.of(context).textTheme;
-
     final saved = provider.isFavorite(listing.id);
 
     return Scaffold(
@@ -88,11 +96,14 @@ class ListingDetailScreen extends StatelessWidget {
       ),
       body: ListView(
         children: [
-          // Photo placeholder
           Container(
             height: 220,
             color: const Color(0xFFE2EBED),
-            child: const Icon(Icons.image_outlined, size: 64, color: SouqColors.teal),
+            child: const Icon(
+              Icons.image_outlined,
+              size: 64,
+              color: SouqColors.teal,
+            ),
           ),
           Padding(
             padding: const EdgeInsets.all(16),
@@ -142,7 +153,8 @@ class ListingDetailScreen extends StatelessWidget {
     if (isMine) {
       return [
         FilledButton.icon(
-          onPressed: listing.isSold ? null : () => _confirmMarkSold(context, listing),
+          onPressed:
+              listing.isSold ? null : () => _confirmMarkSold(context, listing),
           icon: const Icon(Icons.check),
           label: Text(listing.isSold ? 'Sold' : 'Mark as sold'),
         ),
@@ -158,11 +170,21 @@ class ListingDetailScreen extends StatelessWidget {
                   showLoginPrompt(
                     context,
                     title: 'Login to Message',
-                    message: 'You must be logged in to chat with the seller and buy items.',
+                    message:
+                        'You must be logged in to chat with the seller and buy items.',
                   );
                   return;
                 }
-                Navigator.pushNamed(context, AppRoutes.chat);
+                Navigator.pushNamed(
+                  context,
+                  AppRoutes.chat,
+                  arguments: {
+                    'chatId': 'chat_${listing.id}',
+                    'peerName': listing.sellerName,
+                    'itemTitle': listing.title,
+                    'itemPrice': listing.price,
+                  },
+                );
               },
         child: Text(listing.isSold ? 'This item is sold' : 'Message seller'),
       ),
@@ -176,7 +198,8 @@ class ListingDetailScreen extends StatelessWidget {
                   showLoginPrompt(
                     context,
                     title: 'Login Required',
-                    message: 'Please log in to view and copy seller payment information.',
+                    message:
+                        'Please log in to view and copy seller payment information.',
                   );
                   return;
                 }
@@ -197,7 +220,9 @@ class ListingDetailScreen extends StatelessWidget {
           Icon(icon, size: 18, color: SouqColors.subText),
           const SizedBox(width: 8),
           Text('$label: ', style: const TextStyle(color: SouqColors.subText)),
-          Expanded(child: Text(value, style: const TextStyle(color: SouqColors.text))),
+          Expanded(
+            child: Text(value, style: const TextStyle(color: SouqColors.text)),
+          ),
         ],
       ),
     );
