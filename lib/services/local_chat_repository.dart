@@ -52,7 +52,7 @@ class LocalChatRepository implements ChatRepository {
     _messagesMap.putIfAbsent(chatId, () => []).insert(0, message);
     _messagesController.add(List.unmodifiable(_messagesMap[chatId]!));
 
-     final index = _mockChats.indexWhere((c) => c.id == chatId);
+    final index = _mockChats.indexWhere((c) => c.id == chatId);
     if (index != -1) {
       final old = _mockChats[index];
       _mockChats[index] = Chat(
@@ -63,7 +63,22 @@ class LocalChatRepository implements ChatRepository {
         lastMessageAt: message.sentAt,
         unreadCount: const {},
       );
-      _chatsController.add(List.unmodifiable(_mockChats));
+    } else {
+      final listingId = chatId.startsWith('chat_')
+          ? chatId.substring(5)
+          : chatId;
+      _mockChats.insert(
+        0,
+        Chat(
+          id: chatId,
+          listingId: listingId,
+          participantIds: [message.senderId, 'seller_id'],
+          lastMessage: message.text,
+          lastMessageAt: message.sentAt,
+          unreadCount: const {},
+        ),
+      );
     }
+    _chatsController.add(List.unmodifiable(_mockChats));
   }
 }

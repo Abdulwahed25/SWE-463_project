@@ -3,6 +3,7 @@ import 'package:provider/provider.dart';
 
 import '../app_routes.dart';
 import '../providers/chat_provider.dart';
+import '../providers/listings_provider.dart';
 import '../widgets/chat_item_tile.dart';
 
 class MessagesScreen extends StatefulWidget {
@@ -27,11 +28,17 @@ class _MessagesScreenState extends State<MessagesScreen> {
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
     final chatProvider = context.watch<ChatProvider>();
+    final listingsProvider = context.watch<ListingsProvider>();
 
     final filteredChats = chatProvider.chats.where((chat) {
-      final matchesText =
-          chat.lastMessage.toLowerCase().contains(_searchQuery.toLowerCase());
-      return matchesText;
+      final listing = listingsProvider.byId(chat.listingId);
+      final sellerName = listing?.sellerName ?? 'Ali (KFUPM Student)';
+      final itemTitle = listing?.title ?? 'Calculus Book';
+      final query = _searchQuery.toLowerCase();
+
+      return chat.lastMessage.toLowerCase().contains(query) ||
+          sellerName.toLowerCase().contains(query) ||
+          itemTitle.toLowerCase().contains(query);
     }).toList();
 
     return Scaffold(
@@ -67,9 +74,8 @@ class _MessagesScreenState extends State<MessagesScreen> {
               ),
             ),
           ),
-
           Expanded(
-            child: _buildBody(context, chatProvider, filteredChats),
+            child: _buildBody(context, chatProvider, listingsProvider, filteredChats),
           ),
         ],
       ),
@@ -79,6 +85,7 @@ class _MessagesScreenState extends State<MessagesScreen> {
   Widget _buildBody(
     BuildContext context,
     ChatProvider chatProvider,
+    ListingsProvider listingsProvider,
     List filteredChats,
   ) {
     final theme = Theme.of(context);
@@ -158,11 +165,14 @@ class _MessagesScreenState extends State<MessagesScreen> {
       separatorBuilder: (_, __) => const Divider(height: 1, indent: 72),
       itemBuilder: (context, index) {
         final chat = filteredChats[index];
-        final peerName = 'Ali (KFUPM Student)';
+        final listing = listingsProvider.byId(chat.listingId);
+        final peerName = listing?.sellerName ?? 'Ali (KFUPM Student)';
+        final itemTitle = listing?.title ?? 'Calculus Book';
+        final itemPrice = listing?.price ?? 150.0;
 
         return ChatItemTile(
           chat: chat,
-          peerName: peerName,
+          peerName: '$peerName • $itemTitle',
           currentUserId: _currentUserId,
           onTap: () {
             Navigator.pushNamed(
@@ -171,8 +181,8 @@ class _MessagesScreenState extends State<MessagesScreen> {
               arguments: {
                 'chatId': chat.id,
                 'peerName': peerName,
-                'itemTitle': 'Calculus Book',
-                'itemPrice': 150.0,
+                'itemTitle': itemTitle,
+                'itemPrice': itemPrice,
               },
             );
           },
