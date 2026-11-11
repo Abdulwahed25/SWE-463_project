@@ -52,8 +52,7 @@ class LocalChatRepository implements ChatRepository {
     _messagesMap.putIfAbsent(chatId, () => []).insert(0, message);
     _messagesController.add(List.unmodifiable(_messagesMap[chatId]!));
 
-    // تحديث آخر رسالة في قائمة المحادثات الخارجية
-    final index = _mockChats.indexWhere((c) => c.id == chatId);
+     final index = _mockChats.indexWhere((c) => c.id == chatId);
     if (index != -1) {
       final old = _mockChats[index];
       _mockChats[index] = Chat(
