@@ -48,8 +48,11 @@ class SouqApp extends StatelessWidget {
         ChangeNotifierProvider(
           create: (_) => ListingsProvider(repository)..load(),
         ),
-        ChangeNotifierProvider(
-          create: (_) => ChatProvider(chatRepository ?? LocalChatRepository())..loadChats(),
+        // ChatProvider follows the signed-in user: when AuthProvider changes
+        // (login, sign up, logout), update() gives ChatProvider the new user.
+        ChangeNotifierProxyProvider<AuthProvider, ChatProvider>(
+          create: (_) => ChatProvider(chatRepository ?? LocalChatRepository()),
+          update: (_, auth, chat) => chat!..setUser(auth.user),
         ),
       ],
       child: MaterialApp(
