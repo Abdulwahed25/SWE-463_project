@@ -2,6 +2,7 @@ import 'package:flutter_test/flutter_test.dart';
 import 'package:souq/main.dart';
 
 import 'fake_auth_repository.dart';
+import 'fake_chat_repository.dart';
 import 'fake_listing_repository.dart';
 
 void main() {
@@ -9,6 +10,7 @@ void main() {
     await tester.pumpWidget(SouqApp(
       repository: FakeListingRepository(),
       authRepository: FakeAuthRepository(),
+      chatRepository: FakeChatRepository(),
     ));
     await tester.pumpAndSettle();
     expect(find.text('Souq - Login'), findsOneWidget);
