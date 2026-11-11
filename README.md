@@ -51,7 +51,7 @@ No account, key or password is needed. The first time the app opens it adds 6 sa
 | Profile (account details, Posted / Sold / Saved stats, IBAN reminder) | Implemented | Profile |
 | Edit profile (country code picker, phone and IBAN formatted while typing and validated, unsaved-changes warning) | Implemented | Edit Profile, Sign Up (phone) |
 | IBAN quick-transfer helper (seller's IBAN sheet on a listing, copy IBAN) | Implemented | Edit Profile, Profile, Listing Detail |
-| In-app messaging | In progress | Messages, Chat |
+| In-app messaging (Message seller, chat list with search and unread badges, send with validation, saved on the device) | Implemented | Listing Detail, Messages, Chat |
 
 ### How to test the main flow
 
@@ -61,6 +61,16 @@ No account, key or password is needed. The first time the app opens it adds 6 sa
 4. Fill in the form and press **Post listing**. The button shows "Posting...", then the success screen opens.
 5. Press **Back to Home**: the new listing is first in the list. Close and open the app again: it is still there (saved on the device).
 6. Open the listing and press **Mark as sold**: the badge changes to Sold on Home and in My Listings.
+
+### How to test the messaging flow
+
+1. Sign up a new account (account A), press **Post** and post a listing. Then open **Profile** and log out.
+2. Log in with the demo account `student@kfupm.edu.sa` / `password123` (account B). Open account A's listing on Home and press **Message seller**.
+3. The Chat screen opens with "No messages yet". Press **Send** with an empty box: a "Type a message first." hint appears and nothing is sent.
+4. Type a message and press **Send**: it appears at the bottom. Go back: the chat is first in the **Messages** tab with the last message. Search for the item name to find it.
+5. Log out and log in again as account A. The **Messages** tab shows a red badge with 1 unread message. Open the chat: the message is there and the badge goes away. Reply, and the reply is saved too.
+6. Close and open the app again: the chats and messages are still there (saved on the device).
+7. As a guest (**Continue as Guest**), the Messages tab asks you to log in, and **Message seller** shows a login dialog.
 
 ### How to test the profile flow
 
@@ -82,20 +92,23 @@ lib/
   app_routes.dart           route names and screens
   theme.dart                Material 3 theme (Souq colors)
   models/                   Listing, categories and conditions
-  providers/                ListingsProvider (shared state with Provider)
-  services/                 ListingRepository (interface) and LocalListingRepository
+  providers/                AuthProvider, ListingsProvider, ChatProvider (shared state with Provider)
+  services/                 repository interfaces (auth, listings, chat) and their local versions
   screens/                  one file per screen
   widgets/                  reusable widgets (listing card, status badge, empty state, section card, seller payment sheet)
   utils/                    price and time formatting, IBAN helpers, profile validators
-test/                       provider tests and a widget test
+test/                       provider tests (auth, listings, chat, profile), widget tests and fake repositories
 ```
 
 ## State Management and Data
 
-* **Provider** (ChangeNotifier) for shared state. `ListingsProvider` holds the listings, search, filters, favorites, and the loading and error states.
+* **Provider** (ChangeNotifier) for shared state:
+  * `AuthProvider`: the signed-in student, login, sign up, logout and profile updates.
+  * `ListingsProvider`: listings, search, filters, favorites, and the loading and error states.
+  * `ChatProvider`: the signed-in student's chats, the open chat's messages, sending and unread counts. It follows `AuthProvider` through a `ChangeNotifierProxyProvider`, so chats change when someone logs in or out.
 * **setState** for state that belongs to one screen (form fields, the posting flag, the selected tab).
-* **Data source (temporary):** `LocalListingRepository` saves listings and favorites on the device with `shared_preferences`. Screens only use the `ListingRepository` interface, so Firebase (Firestore) can replace it in Phase 4 without changing the screens.
-* `lib/services/session.dart` is a temporary current user until login is connected.
+* **Data source (temporary):** `LocalAuthRepository`, `LocalListingRepository` and `LocalChatRepository` save accounts, listings, favorites, chats and messages on the device with `shared_preferences`. Screens and providers only use the `AuthRepository`, `ListingRepository` and `ChatRepository` interfaces, so Firebase (Auth and Firestore) can replace them in Phase 4 without changing the screens.
+* `lib/services/session.dart` keeps a copy of the signed-in user so new listings are tagged with the right seller.
 
 ## Packages
 
@@ -103,7 +116,7 @@ test/                       provider tests and a widget test
 |---|---|---|
 | cupertino_icons | iOS style icons (comes with Flutter) | MIT |
 | provider | Share app state between screens | MIT |
-| shared_preferences | Save listings and favorites on the device | BSD-3-Clause |
+| shared_preferences | Save accounts, listings, favorites, chats and messages on the device | BSD-3-Clause |
 
 Planned for Phase 4: firebase_core, firebase_auth, cloud_firestore, firebase_storage, image_picker.
 
@@ -111,7 +124,8 @@ Planned for Phase 4: firebase_core, firebase_auth, cloud_firestore, firebase_sto
 
 * Data is saved only on the device. Other users cannot see your listings until Firebase is added in Phase 4.
 * Photos cannot be added yet (the photo box shows a message).
-* Chat is still in progress.
+* Chats only work between accounts on the same device until Firestore is added in Phase 4. Sample listings belong to sample sellers with no accounts, so nobody replies to those chats.
+* Chats do not update live: the other person sees a new message after opening the Messages tab again (pull down to refresh).
 * Changing your name does not update the seller name on listings you posted before the change.
 * The seller's IBAN can only be found if the seller's account is on the same device (local storage). Firestore will fix this in Phase 4.
 
@@ -122,7 +136,7 @@ AI use was allowed by the course instructor. We used an AI assistant for:
 * Screen design: the team decided the screens, features and style (KFUPM colors, cart logo). AI helped turn these ideas into Figma screens and suggested layout and color improvements. The team reviewed every screen.
 * Navigation diagram: AI helped draw the diagram from the flow the team defined.
 * Reports: AI helped write parts of the Phase 2 and Phase 3 reports.
-* Code: AI helped write `lib/theme.dart`, the shared widgets, and the Phase 3 listings feature (model, repository, provider, Home, Filter, Post Listing, Listing Detail, My Listings, favorites and tests). Commits made with AI help include a "Co-Authored-By: Claude" line.
+* Code: AI helped write `lib/theme.dart`, the shared widgets, the Phase 3 listings feature (model, repository, provider, Home, Filter, Post Listing, Listing Detail, My Listings, favorites and tests), and finishing the messaging feature (connecting chat to the signed-in user, saving chats on the device, unread badges and chat tests). Some commits made with AI help include a "Co-Authored-By: Claude" line; this list is the full disclosure.
 * Spelling and grammar checks.
 
 Every team member reviewed the AI-assisted work and can explain the code they are responsible for.
