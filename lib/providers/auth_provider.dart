@@ -120,6 +120,11 @@ class AuthProvider extends ChangeNotifier {
     }
   }
 
+  /// Looks up another user's public profile (used to show a seller's IBAN).
+  /// Does not change the signed-in user or the loading flag, so the caller
+  /// shows its own loading / error state. Throws if the lookup fails.
+  Future<User?> fetchUser(String id) => _repository.getUserById(id);
+
   /// Signs the student out and clears their active session.
   Future<void> logout() async {
     await _repository.logout();

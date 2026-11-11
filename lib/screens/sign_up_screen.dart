@@ -2,8 +2,11 @@ import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 
 import '../app_routes.dart';
+import '../models/country.dart';
 import '../providers/auth_provider.dart';
 import '../theme.dart';
+import '../utils/phone.dart';
+import '../widgets/phone_field.dart';
 
 class SignUpScreen extends StatefulWidget {
   const SignUpScreen({super.key});
@@ -18,6 +21,7 @@ class _SignUpScreenState extends State<SignUpScreen> {
   final _studentIdController = TextEditingController();
   final _emailController = TextEditingController();
   final _phoneController = TextEditingController();
+  Country _phoneCountry = Country.saudiArabia;
   final _passwordController = TextEditingController();
   final _confirmPasswordController = TextEditingController();
 
@@ -44,7 +48,7 @@ class _SignUpScreenState extends State<SignUpScreen> {
       name: _nameController.text.trim(),
       email: _emailController.text.trim(),
       studentId: _studentIdController.text.trim(),
-      phone: _phoneController.text.trim(),
+      phone: toStoredPhone(_phoneCountry, _phoneController.text),
       password: _passwordController.text,
     );
 
@@ -188,14 +192,11 @@ class _SignUpScreenState extends State<SignUpScreen> {
                   // Phone Number (Optional)
                   const Text('Phone Number (Optional)', style: TextStyle(fontSize: 13, fontWeight: FontWeight.w600)),
                   const SizedBox(height: 6),
-                  TextFormField(
+                  PhoneField(
                     controller: _phoneController,
-                    keyboardType: TextInputType.phone,
+                    country: _phoneCountry,
+                    onCountryChanged: (country) => setState(() => _phoneCountry = country),
                     textInputAction: TextInputAction.next,
-                    decoration: const InputDecoration(
-                      hintText: '05x xxx xxxx',
-                      prefixIcon: Icon(Icons.phone_outlined, color: SouqColors.subText),
-                    ),
                   ),
                   const SizedBox(height: 14),
 

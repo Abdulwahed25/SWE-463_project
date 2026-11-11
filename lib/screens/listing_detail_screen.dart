@@ -9,6 +9,7 @@ import '../theme.dart';
 import '../utils/auth_dialog.dart';
 import '../utils/format.dart';
 import '../widgets/empty_state.dart';
+import '../widgets/seller_payment_sheet.dart';
 import '../widgets/status_badge.dart';
 
 /// Shows one listing. The listing id is passed as the route argument.
@@ -203,9 +204,7 @@ class ListingDetailScreen extends StatelessWidget {
                   );
                   return;
                 }
-                ScaffoldMessenger.of(context).showSnackBar(
-                  const SnackBar(content: Text('IBAN copied to clipboard')),
-                );
+                showSellerPaymentSheet(context, listing);
               },
         child: const Text('Copy IBAN'),
       ),

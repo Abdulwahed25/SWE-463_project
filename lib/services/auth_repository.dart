@@ -22,5 +22,9 @@ abstract class AuthRepository {
 
   Future<void> updateUser(User user);
 
+  /// Finds any user by id (e.g. a listing's seller, to show their IBAN).
+  /// Returns null when no account has this id.
+  Future<User?> getUserById(String id);
+
   Future<void> logout();
 }

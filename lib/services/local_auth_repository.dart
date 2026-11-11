@@ -140,6 +140,18 @@ class LocalAuthRepository implements AuthRepository {
   }
 
   @override
+  Future<User?> getUserById(String id) async {
+    await Future.delayed(_delay);
+    final prefs = await SharedPreferences.getInstance();
+    final accounts = await _getAllAccounts(prefs);
+    for (final account in accounts.values) {
+      final userMap = (account as Map<String, dynamic>)['user'] as Map<String, dynamic>;
+      if (userMap['id'] == id) return User.fromMap(userMap);
+    }
+    return null;
+  }
+
+  @override
   Future<void> logout() async {
     await Future.delayed(const Duration(milliseconds: 200));
     final prefs = await SharedPreferences.getInstance();

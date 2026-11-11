@@ -3,10 +3,13 @@ import 'package:souq/services/auth_repository.dart';
 
 /// In-memory auth repository used by tests.
 class FakeAuthRepository implements AuthRepository {
-  FakeAuthRepository({this.currentUser});
+  FakeAuthRepository({this.currentUser, this.shouldFail = false});
 
   User? currentUser;
   final Map<String, User> users = {};
+
+  /// When true, updateUser and getUserById throw (to test error states).
+  bool shouldFail;
 
   @override
   Future<User?> getCurrentUser() async => currentUser;
@@ -43,10 +46,22 @@ class FakeAuthRepository implements AuthRepository {
 
   @override
   Future<void> updateUser(User user) async {
+    if (shouldFail) throw Exception('No connection');
     users[user.email.toLowerCase()] = user;
     if (currentUser?.email.toLowerCase() == user.email.toLowerCase()) {
       currentUser = user;
     }
+  }
+
+  @override
+  Future<User?> getUserById(String id) async {
+    if (shouldFail) throw Exception('No connection');
+    final all = [...users.values];
+    if (currentUser != null) all.add(currentUser!);
+    for (final user in all) {
+      if (user.id == id) return user;
+    }
+    return null;
   }
 
   @override
