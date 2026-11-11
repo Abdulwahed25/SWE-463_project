@@ -4,6 +4,7 @@ import 'package:provider/provider.dart';
 import '../app_routes.dart';
 import '../models/listing.dart';
 import '../providers/auth_provider.dart';
+import '../providers/chat_provider.dart';
 import '../providers/listings_provider.dart';
 import '../theme.dart';
 import '../utils/auth_dialog.dart';
@@ -150,6 +151,29 @@ class ListingDetailScreen extends StatelessWidget {
     );
   }
 
+  /// Finds or creates the chat with the seller, then opens the Chat screen.
+  Future<void> _openChat(BuildContext context, Listing listing) async {
+    final navigator = Navigator.of(context);
+    final messenger = ScaffoldMessenger.of(context);
+    try {
+      final chat = await context.read<ChatProvider>().openChatForListing(listing);
+      if (chat == null) return;
+      navigator.pushNamed(
+        AppRoutes.chat,
+        arguments: {
+          'chatId': chat.id,
+          'peerName': listing.sellerName,
+          'itemTitle': listing.title,
+          'itemPrice': listing.price,
+        },
+      );
+    } catch (e) {
+      messenger.showSnackBar(
+        const SnackBar(content: Text("Couldn't open the chat. Try again.")),
+      );
+    }
+  }
+
   List<Widget> _actions(BuildContext context, Listing listing, bool isMine) {
     if (isMine) {
       return [
@@ -176,16 +200,7 @@ class ListingDetailScreen extends StatelessWidget {
                   );
                   return;
                 }
-                Navigator.pushNamed(
-                  context,
-                  AppRoutes.chat,
-                  arguments: {
-                    'chatId': 'chat_${listing.id}',
-                    'peerName': listing.sellerName,
-                    'itemTitle': listing.title,
-                    'itemPrice': listing.price,
-                  },
-                );
+                _openChat(context, listing);
               },
         child: Text(listing.isSold ? 'This item is sold' : 'Message seller'),
       ),

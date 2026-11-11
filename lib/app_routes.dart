@@ -33,13 +33,13 @@ class AppRoutes {
         listingDetail: (_) => const ListingDetailScreen(),
         messages: (_) => const MessagesScreen(),
         chat: (context) {
-          final args =
-              ModalRoute.of(context)?.settings.arguments as Map<String, dynamic>?;
+          // Arguments come from "Message seller" or from the Messages tab.
+          final args = ModalRoute.of(context)?.settings.arguments as Map<String, dynamic>? ?? {};
           return ChatScreen(
-            chatId: args?['chatId'] ?? 'chat_1',
-            peerName: args?['peerName'] ?? 'Ali (KFUPM Student)',
-            itemTitle: args?['itemTitle'] ?? 'Calculus Book',
-            itemPrice: (args?['itemPrice'] as num?)?.toDouble() ?? 150.0,
+            chatId: args['chatId'] as String? ?? '',
+            peerName: args['peerName'] as String? ?? 'KFUPM student',
+            itemTitle: args['itemTitle'] as String? ?? '',
+            itemPrice: (args['itemPrice'] as num?)?.toDouble() ?? 0,
           );
         },
         postListing: (_) => const PostListingScreen(),
