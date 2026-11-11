@@ -39,7 +39,6 @@ class _ChatScreenState extends State<ChatScreen> {
   void initState() {
     super.initState();
     _chatProvider = context.read<ChatProvider>();
-    // Load the messages after the first frame (providers can't notify during build).
     WidgetsBinding.instance.addPostFrameCallback((_) {
       _chatProvider.enterChat(widget.chatId);
     });
@@ -81,7 +80,6 @@ class _ChatScreenState extends State<ChatScreen> {
           );
       }
     } catch (e) {
-      debugPrint('Error picking image: $e');
       if (!mounted) return;
       messenger
         ..hideCurrentSnackBar()
@@ -91,11 +89,74 @@ class _ChatScreenState extends State<ChatScreen> {
     }
   }
 
+  Future<void> _pickAndSendVideo() async {
+    final messenger = ScaffoldMessenger.of(context);
+    try {
+      final XFile? video = await _picker.pickVideo(
+        source: ImageSource.gallery,
+        maxDuration: const Duration(minutes: 2),
+      );
+
+      if (video == null) return;
+
+      final ok = await _chatProvider.sendMessage(
+        chatId: widget.chatId,
+        text: _textController.text.trim(),
+        videoUrl: video.path,
+      );
+
+      if (!mounted) return;
+      if (ok) {
+        _textController.clear();
+      } else {
+        messenger
+          ..hideCurrentSnackBar()
+          ..showSnackBar(
+            const SnackBar(content: Text('Video not sent. Please try again.')),
+          );
+      }
+    } catch (e) {
+      if (!mounted) return;
+      messenger
+        ..hideCurrentSnackBar()
+        ..showSnackBar(
+          SnackBar(content: Text('Could not pick video: $e')),
+        );
+    }
+  }
+
+  void _showAttachmentOptions() {
+    showModalBottomSheet(
+      context: context,
+      builder: (ctx) => SafeArea(
+        child: Wrap(
+          children: [
+            ListTile(
+              leading: const Icon(Icons.photo_outlined),
+              title: const Text('Send Photo'),
+              onTap: () {
+                Navigator.pop(ctx);
+                _pickAndSendImage();
+              },
+            ),
+            ListTile(
+              leading: const Icon(Icons.videocam_outlined),
+              title: const Text('Send Video'),
+              onTap: () {
+                Navigator.pop(ctx);
+                _pickAndSendVideo();
+              },
+            ),
+          ],
+        ),
+      ),
+    );
+  }
+
   Future<void> _send() async {
     final text = _textController.text.trim();
     final messenger = ScaffoldMessenger.of(context);
 
-    // Validation: empty or whitespace-only messages are not sent.
     if (text.isEmpty) {
       messenger
         ..hideCurrentSnackBar()
@@ -188,11 +249,11 @@ class _ChatScreenState extends State<ChatScreen> {
               child: Row(
                 children: [
                   IconButton(
-                    key: const Key('chat_attach_image'),
-                    tooltip: 'Send photo',
-                    icon: const Icon(Icons.photo_outlined),
+                    key: const Key('chat_attach_media'),
+                    tooltip: 'Attach media',
+                    icon: const Icon(Icons.attach_file_rounded),
                     color: theme.colorScheme.primary,
-                    onPressed: chat.isSending ? null : _pickAndSendImage,
+                    onPressed: chat.isSending ? null : _showAttachmentOptions,
                   ),
                   Expanded(
                     child: TextField(
@@ -203,7 +264,7 @@ class _ChatScreenState extends State<ChatScreen> {
                       decoration: const InputDecoration(
                         hintText: 'Write a message...',
                         border: InputBorder.none,
-                        counterText: '', // hide the 0/500 counter
+                        counterText: '',
                         contentPadding: EdgeInsets.symmetric(horizontal: 8),
                       ),
                       onSubmitted: (_) => _send(),
@@ -234,7 +295,6 @@ class _ChatScreenState extends State<ChatScreen> {
     );
   }
 
-  /// Loading, error, empty or the list of messages.
   Widget _buildMessages(ChatProvider chat) {
     if (chat.isLoadingMessages) {
       return const Center(child: CircularProgressIndicator());
@@ -257,7 +317,7 @@ class _ChatScreenState extends State<ChatScreen> {
       );
     }
     return ListView.builder(
-      reverse: true, // newest message at the bottom
+      reverse: true,
       padding: const EdgeInsets.symmetric(vertical: 8),
       itemCount: messages.length,
       itemBuilder: (context, index) {
