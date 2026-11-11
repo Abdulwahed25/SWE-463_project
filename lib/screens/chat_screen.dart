@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:image_picker/image_picker.dart';
 import 'package:provider/provider.dart';
 
 import '../providers/chat_provider.dart';
@@ -31,6 +32,7 @@ class ChatScreen extends StatefulWidget {
 
 class _ChatScreenState extends State<ChatScreen> {
   final _textController = TextEditingController();
+  final _picker = ImagePicker();
   late final ChatProvider _chatProvider;
 
   @override
@@ -48,6 +50,45 @@ class _ChatScreenState extends State<ChatScreen> {
     _chatProvider.leaveChat();
     _textController.dispose();
     super.dispose();
+  }
+
+  Future<void> _pickAndSendImage() async {
+    final messenger = ScaffoldMessenger.of(context);
+    try {
+      final XFile? image = await _picker.pickImage(
+        source: ImageSource.gallery,
+        maxWidth: 1024,
+        maxHeight: 1024,
+        imageQuality: 80,
+      );
+
+      if (image == null) return;
+
+      final ok = await _chatProvider.sendMessage(
+        chatId: widget.chatId,
+        text: _textController.text.trim(),
+        imageUrl: image.path,
+      );
+
+      if (!mounted) return;
+      if (ok) {
+        _textController.clear();
+      } else {
+        messenger
+          ..hideCurrentSnackBar()
+          ..showSnackBar(
+            const SnackBar(content: Text('Image not sent. Please try again.')),
+          );
+      }
+    } catch (e) {
+      debugPrint('Error picking image: $e');
+      if (!mounted) return;
+      messenger
+        ..hideCurrentSnackBar()
+        ..showSnackBar(
+          SnackBar(content: Text('Could not pick image: $e')),
+        );
+    }
   }
 
   Future<void> _send() async {
@@ -146,6 +187,13 @@ class _ChatScreenState extends State<ChatScreen> {
               color: theme.colorScheme.surface,
               child: Row(
                 children: [
+                  IconButton(
+                    key: const Key('chat_attach_image'),
+                    tooltip: 'Send photo',
+                    icon: const Icon(Icons.photo_outlined),
+                    color: theme.colorScheme.primary,
+                    onPressed: chat.isSending ? null : _pickAndSendImage,
+                  ),
                   Expanded(
                     child: TextField(
                       key: const Key('chat_input'),
@@ -156,7 +204,7 @@ class _ChatScreenState extends State<ChatScreen> {
                         hintText: 'Write a message...',
                         border: InputBorder.none,
                         counterText: '', // hide the 0/500 counter
-                        contentPadding: EdgeInsets.symmetric(horizontal: 12),
+                        contentPadding: EdgeInsets.symmetric(horizontal: 8),
                       ),
                       onSubmitted: (_) => _send(),
                     ),
