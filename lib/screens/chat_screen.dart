@@ -5,6 +5,7 @@ import '../providers/chat_provider.dart';
 import '../utils/format.dart';
 import '../widgets/chat_bubble.dart';
 import '../widgets/empty_state.dart';
+import 'seller_profile_screen.dart';
 
 /// One conversation. Opened from "Message seller" or from the Messages tab.
 class ChatScreen extends StatefulWidget {
@@ -77,19 +78,62 @@ class _ChatScreenState extends State<ChatScreen> {
     final theme = Theme.of(context);
     final chat = context.watch<ChatProvider>();
 
+    final initials = widget.peerName.trim().isNotEmpty
+        ? widget.peerName.trim().split(' ').take(2).map((e) => e[0].toUpperCase()).join()
+        : '?';
+
     return Scaffold(
       appBar: AppBar(
-        title: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            Text(widget.peerName, style: const TextStyle(fontSize: 16)),
-            Text(
-              '${widget.itemTitle} - ${formatPrice(widget.itemPrice)}',
-              style: theme.textTheme.bodySmall?.copyWith(
-                color: theme.colorScheme.onSurface.withValues(alpha: 0.7),
+        titleSpacing: 0,
+        title: InkWell(
+          borderRadius: BorderRadius.circular(8),
+          onTap: () {
+            Navigator.push(
+              context,
+              MaterialPageRoute(
+                builder: (context) => SellerProfileScreen(
+                  sellerName: widget.peerName,
+                ),
               ),
+            );
+          },
+          child: Padding(
+            padding: const EdgeInsets.symmetric(horizontal: 4, vertical: 4),
+            child: Row(
+              children: [
+                CircleAvatar(
+                  radius: 18,
+                  backgroundColor: theme.colorScheme.primaryContainer,
+                  foregroundColor: theme.colorScheme.onPrimaryContainer,
+                  child: Text(
+                    initials,
+                    style: const TextStyle(fontSize: 12, fontWeight: FontWeight.bold),
+                  ),
+                ),
+                const SizedBox(width: 10),
+                Expanded(
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    mainAxisSize: MainAxisSize.min,
+                    children: [
+                      Text(
+                        widget.peerName,
+                        style: const TextStyle(fontSize: 15, fontWeight: FontWeight.w600),
+                        overflow: TextOverflow.ellipsis,
+                      ),
+                      Text(
+                        '${widget.itemTitle} - ${formatPrice(widget.itemPrice)}',
+                        style: theme.textTheme.bodySmall?.copyWith(
+                          color: theme.colorScheme.onSurface.withValues(alpha: 0.7),
+                        ),
+                        overflow: TextOverflow.ellipsis,
+                      ),
+                    ],
+                  ),
+                ),
+              ],
             ),
-          ],
+          ),
         ),
       ),
       body: Column(
