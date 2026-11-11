@@ -134,17 +134,22 @@ class ChatProvider extends ChangeNotifier {
     }
   }
 
-  /// Sends a message from the signed-in user.
-  /// Returns false (and nothing is sent) if the text is empty or saving fails.
-  Future<bool> sendMessage({required String chatId, required String text}) async {
+  /// Sends a text or image message from the signed-in user.
+  Future<bool> sendMessage({
+    required String chatId,
+    required String text,
+    String? imageUrl,
+  }) async {
     final me = currentUserId;
     final clean = text.trim();
-    if (me == null || clean.isEmpty || _isSending) return false;
+    final hasImage = imageUrl != null && imageUrl.isNotEmpty;
+    if (me == null || (clean.isEmpty && !hasImage) || _isSending) return false;
 
     final message = Message(
       id: DateTime.now().microsecondsSinceEpoch.toString(),
       senderId: me,
       text: clean,
+      imageUrl: imageUrl,
       sentAt: DateTime.now(),
     );
 
@@ -155,7 +160,8 @@ class ChatProvider extends ChangeNotifier {
       if (_activeChatId == chatId) {
         _activeMessages = [message, ..._activeMessages];
       }
-      _updateChat(chatId, (c) => c.copyWith(lastMessage: clean, lastMessageAt: message.sentAt));
+      final preview = clean.isNotEmpty ? clean : '📷 Photo';
+      _updateChat(chatId, (c) => c.copyWith(lastMessage: preview, lastMessageAt: message.sentAt));
       _chats.sort((a, b) => b.lastMessageAt.compareTo(a.lastMessageAt));
       return true;
     } catch (e) {

@@ -2,12 +2,14 @@ class Message {
   final String id;
   final String senderId;
   final String text;
+  final String? imageUrl;
   final DateTime sentAt;
 
   const Message({
     required this.id,
     required this.senderId,
     required this.text,
+    this.imageUrl,
     required this.sentAt,
   });
 
@@ -15,6 +17,7 @@ class Message {
     return {
       'senderId': senderId,
       'text': text,
+      'imageUrl': imageUrl,
       'sentAt': sentAt.toIso8601String(),
     };
   }
@@ -24,6 +27,7 @@ class Message {
       id: id,
       senderId: map['senderId'] ?? '',
       text: map['text'] ?? '',
+      imageUrl: map['imageUrl'],
       sentAt: map['sentAt'] != null
           ? DateTime.tryParse(map['sentAt']) ?? DateTime.now()
           : DateTime.now(),
