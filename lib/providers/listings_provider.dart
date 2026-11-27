@@ -98,18 +98,24 @@ class ListingsProvider extends ChangeNotifier {
     Future.microtask(_loadFavorites);
   }
 
+  /// Counts heart taps, so a slow favorites load does not undo a tap.
+  int _favoriteChanges = 0;
+
   Future<void> _loadFavorites() async {
     final id = _userId;
     if (id == null) {
       notifyListeners();
       return;
     }
+    final changesBefore = _favoriteChanges;
     try {
       final ids = await _repository.fetchFavoriteIds(id);
       if (id != _userId) return; // user changed while loading
+      // If the student tapped a heart while we were loading, keep their tap.
+      if (_favoriteChanges != changesBefore) return;
       _favoriteIds = ids;
     } catch (_) {
-      _favoriteIds = {}; // favorites are optional; the listings still show
+      // Favorites are optional; the listings still show without them.
     }
     notifyListeners();
   }
@@ -173,6 +179,7 @@ class ListingsProvider extends ChangeNotifier {
   Future<bool> toggleFavorite(String id) async {
     final userId = _userId;
     if (userId == null) return false; // guests are asked to log in first
+    _favoriteChanges++;
     final before = _favoriteIds;
     final updated = {..._favoriteIds};
     if (!updated.remove(id)) updated.add(id);
