@@ -65,15 +65,56 @@ void main() {
     expect(provider.byId('1')!.isSold, true);
   });
 
-  test('toggleFavorite() saves and removes a favorite', () async {
+  test('toggleFavorite() saves and removes a favorite for the signed-in user', () async {
+    provider.setUser('me');
     await provider.load();
-    await provider.toggleFavorite('2');
+    expect(await provider.toggleFavorite('2'), true);
     expect(provider.isFavorite('2'), true);
-    expect(repo.savedFavorites, {'2'});
+    expect(repo.savedFavorites('me'), {'2'});
     expect(provider.favorites.map((l) => l.id), ['2']);
 
     await provider.toggleFavorite('2');
     expect(provider.isFavorite('2'), false);
-    expect(repo.savedFavorites, isEmpty);
+    expect(repo.savedFavorites('me'), isEmpty);
+  });
+
+  test('a guest cannot save favorites', () async {
+    await provider.load();
+    expect(await provider.toggleFavorite('2'), false);
+    expect(provider.isFavorite('2'), false);
+  });
+
+  test('a failed save puts the heart back', () async {
+    provider.setUser('me');
+    await provider.load();
+    repo.shouldFail = true;
+    expect(await provider.toggleFavorite('2'), false);
+    expect(provider.isFavorite('2'), false);
+  });
+
+  test('favorites are loaded for the user who logs in', () async {
+    repo.favoritesByUser['sara'] = {'1'};
+    await provider.load();
+    provider.setUser('sara');
+    await Future<void>.delayed(Duration.zero);
+    expect(provider.isFavorite('1'), true);
+
+    provider.setUser(null); // logout
+    await Future<void>.delayed(Duration.zero);
+    expect(provider.isFavorite('1'), false);
+  });
+
+  test('addListing() keeps the photo', () async {
+    await provider.load();
+    final added = await provider.addListing(
+      title: 'Desk',
+      price: 90,
+      category: 'Furniture',
+      condition: 'Used',
+      location: 'Building 57',
+      description: 'Wooden study desk',
+      photo: 'aGVsbG8=',
+    );
+    expect(provider.byId(added.id)!.hasPhoto, true);
   });
 }

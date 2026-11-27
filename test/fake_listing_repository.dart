@@ -1,7 +1,7 @@
 import 'package:souq/models/listing.dart';
 import 'package:souq/services/listing_repository.dart';
 
-/// In-memory repository used only by tests (no device storage, no delay).
+/// In-memory listing repository used only by tests (no Firebase, no delay).
 class FakeListingRepository implements ListingRepository {
   FakeListingRepository({List<Listing>? initial, this.shouldFail = false})
       : _items = [...?initial];
@@ -27,14 +27,18 @@ class FakeListingRepository implements ListingRepository {
     _items[i] = listing;
   }
 
-  Set<String> savedFavorites = {};
+  /// Favorites per user id.
+  final Map<String, Set<String>> favoritesByUser = {};
+
+  Set<String> savedFavorites([String userId = 'me']) => {...?favoritesByUser[userId]};
 
   @override
-  Future<Set<String>> fetchFavoriteIds() async => {...savedFavorites};
+  Future<Set<String>> fetchFavoriteIds(String userId) async => savedFavorites(userId);
 
   @override
-  Future<void> saveFavoriteIds(Set<String> ids) async {
-    savedFavorites = {...ids};
+  Future<void> saveFavoriteIds(String userId, Set<String> ids) async {
+    if (shouldFail) throw Exception('No connection');
+    favoritesByUser[userId] = {...ids};
   }
 }
 

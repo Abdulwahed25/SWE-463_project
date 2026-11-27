@@ -24,8 +24,12 @@ final listing = Listing(
   createdAt: DateTime(2026, 11, 1),
 );
 
-/// Lets the microtask in setUser and the fake repository calls finish.
-Future<void> settle() => Future<void>.delayed(Duration.zero);
+/// Lets the microtask in setUser and the fake streams deliver their values.
+Future<void> settle() async {
+  for (var i = 0; i < 3; i++) {
+    await Future<void>.delayed(Duration.zero);
+  }
+}
 
 void main() {
   group('ChatProvider', () {
@@ -36,6 +40,8 @@ void main() {
       repo = FakeChatRepository();
       provider = ChatProvider(repo);
     });
+
+    tearDown(() => provider.dispose());
 
     test('guest has no chats and cannot open a chat', () async {
       provider.setUser(null);
@@ -56,6 +62,7 @@ void main() {
 
       final first = await provider.openChatForListing(listing);
       final second = await provider.openChatForListing(listing);
+      await settle();
 
       expect(first!.id, second!.id);
       expect(provider.chats.length, 1);
@@ -71,13 +78,25 @@ void main() {
       expect(repo.messages[chat.id], isNull);
     });
 
-    test('sent message shows in the chat and is unread for the seller', () async {
+    test('a photo message without text is sent', () async {
       provider.setUser(buyer);
       await settle();
       final chat = await provider.openChatForListing(listing);
-      await provider.enterChat(chat!.id);
+
+      expect(await provider.sendMessage(chatId: chat!.id, text: '', photo: 'aGVsbG8='), isTrue);
+      await settle();
+      expect(provider.chats.first.lastMessage, 'Photo');
+    });
+
+    test('sent message shows live in the chat and is unread for the seller', () async {
+      provider.setUser(buyer);
+      await settle();
+      final chat = await provider.openChatForListing(listing);
+      provider.enterChat(chat!.id);
+      await settle();
 
       final ok = await provider.sendMessage(chatId: chat.id, text: ' Is it available? ');
+      await settle();
 
       expect(ok, isTrue);
       expect(provider.activeMessages.first.text, 'Is it available?');
@@ -91,7 +110,8 @@ void main() {
       expect(provider.chats.first.peerName(seller.id), 'Sara');
 
       // Opening the chat marks it as read.
-      await provider.enterChat(chat.id);
+      provider.enterChat(chat.id);
+      await settle();
       expect(provider.unreadTotal, 0);
     });
 
@@ -101,7 +121,8 @@ void main() {
       final chat = await provider.openChatForListing(listing);
 
       repo.shouldFail = true;
-      await provider.loadChats();
+      provider.loadChats();
+      await settle();
       expect(provider.errorMessage, isNotNull);
       expect(await provider.sendMessage(chatId: chat!.id, text: 'Hi'), isFalse);
     });

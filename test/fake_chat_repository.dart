@@ -1,11 +1,15 @@
+import 'dart:async';
+
 import 'package:souq/models/chat.dart';
 import 'package:souq/models/message.dart';
 import 'package:souq/services/chat_repository.dart';
 
-/// In-memory chat repository used by tests (no device storage, no delay).
+/// In-memory chat repository used by tests (no Firebase, no delay).
+/// Its streams send a new value after every change, like Firestore does.
 class FakeChatRepository implements ChatRepository {
   final Map<String, Chat> chats = {};
   final Map<String, List<Message>> messages = {};
+  final _changes = StreamController<void>.broadcast();
 
   /// When true, every call throws (to test error states).
   bool shouldFail = false;
@@ -14,16 +18,25 @@ class FakeChatRepository implements ChatRepository {
     if (shouldFail) throw Exception('No connection');
   }
 
+  List<Chat> _chatsFor(String userId) =>
+      chats.values.where((c) => c.participantIds.contains(userId)).toList();
+
   @override
-  Future<List<Chat>> fetchChats(String userId) async {
+  Stream<List<Chat>> watchChats(String userId) async* {
     _check();
-    return chats.values.where((c) => c.participantIds.contains(userId)).toList();
+    yield _chatsFor(userId);
+    await for (final _ in _changes.stream) {
+      yield _chatsFor(userId);
+    }
   }
 
   @override
-  Future<List<Message>> fetchMessages(String chatId) async {
+  Stream<List<Message>> watchMessages(String chatId) async* {
     _check();
-    return [...?messages[chatId]];
+    yield [...?messages[chatId]];
+    await for (final _ in _changes.stream) {
+      yield [...?messages[chatId]];
+    }
   }
 
   @override
@@ -36,7 +49,7 @@ class FakeChatRepository implements ChatRepository {
   }) async {
     _check();
     final id = Chat.idFor(listingId: listingId, buyerId: buyerId);
-    return chats.putIfAbsent(
+    final chat = chats.putIfAbsent(
       id,
       () => Chat(
         id: id,
@@ -47,6 +60,8 @@ class FakeChatRepository implements ChatRepository {
         lastMessageAt: DateTime.now(),
       ),
     );
+    _changes.add(null);
+    return chat;
   }
 
   @override
@@ -59,10 +74,11 @@ class FakeChatRepository implements ChatRepository {
       if (id != message.senderId) unread[id] = (unread[id] ?? 0) + 1;
     }
     chats[chatId] = chat.copyWith(
-      lastMessage: message.text,
+      lastMessage: message.preview,
       lastMessageAt: message.sentAt,
       unreadCount: unread,
     );
+    _changes.add(null);
   }
 
   @override
@@ -73,5 +89,6 @@ class FakeChatRepository implements ChatRepository {
     chats[chatId] = chat.copyWith(
       unreadCount: Map<String, int>.from(chat.unreadCount)..[userId] = 0,
     );
+    _changes.add(null);
   }
 }
