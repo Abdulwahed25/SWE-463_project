@@ -111,8 +111,9 @@ class _FilterSheetState extends State<FilterSheet> {
                 final text = value?.trim() ?? '';
                 if (text.isEmpty) return null;
                 final number = double.tryParse(text);
-                if (number == null || number <= 0)
+                if (number == null || number <= 0) {
                   return 'Enter a number above 0';
+                }
                 return null;
               },
             ),

@@ -157,10 +157,12 @@ class _PostListingScreenState extends State<PostListingScreen> {
                 validator: (value) {
                   final text = value?.trim() ?? '';
                   if (text.isEmpty) return 'Title is required';
-                  if (text.length < 3)
+                  if (text.length < 3) {
                     return 'Title must be at least 3 characters';
-                  if (text.length > 60)
+                  }
+                  if (text.length > 60) {
                     return 'Title must be 60 characters or less';
+                  }
                   return null;
                 },
               ),

@@ -48,8 +48,9 @@ class PhoneField extends StatelessWidget {
 
     // Re-format what was typed for the new country's length and grouping.
     var digits = digitsOnly(controller.text);
-    if (digits.length > picked.length)
+    if (digits.length > picked.length) {
       digits = digits.substring(0, picked.length);
+    }
     controller.text = formatLocalPhone(picked, digits);
     onCountryChanged(picked);
   }

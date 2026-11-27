@@ -60,8 +60,9 @@ class ListingsProvider extends ChangeNotifier {
           !l.description.toLowerCase().contains(text)) {
         return false;
       }
-      if (_filter.category != null && l.category != _filter.category)
+      if (_filter.category != null && l.category != _filter.category) {
         return false;
+      }
       if (_filter.maxPrice != null && l.price > _filter.maxPrice!) return false;
       if (_filter.availableOnly && l.isSold) return false;
       return true;

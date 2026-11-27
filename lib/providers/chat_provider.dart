@@ -160,8 +160,9 @@ class ChatProvider extends ChangeNotifier {
   }) async {
     final me = currentUserId;
     final clean = text.trim();
-    if (me == null || (clean.isEmpty && photo.isEmpty) || _isSending)
+    if (me == null || (clean.isEmpty && photo.isEmpty) || _isSending) {
       return false;
+    }
 
     final message = Message(
       id: DateTime.now().microsecondsSinceEpoch.toString(),

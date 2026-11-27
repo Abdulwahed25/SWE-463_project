@@ -39,8 +39,9 @@ class ProfileValidators {
     final iban = normalizeIban(value ?? '');
     if (iban.isEmpty) return null;
     if (!iban.startsWith('SA')) return 'Saudi IBAN must start with SA.';
-    if (!RegExp(r'^SA\d*$').hasMatch(iban))
+    if (!RegExp(r'^SA\d*$').hasMatch(iban)) {
       return 'IBAN can only contain digits after SA.';
+    }
     if (iban.length != 24) {
       return 'Enter the 22 digits after SA (you entered ${iban.length - 2}).';
     }

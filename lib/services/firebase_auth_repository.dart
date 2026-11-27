@@ -33,7 +33,7 @@ class FirebaseAuthRepository implements AuthRepository {
         email: email.trim(),
         password: password,
       );
-      return _loadProfile(result.user!);
+      return await _loadProfile(result.user!);
     } on fb.FirebaseAuthException catch (e) {
       throw Exception(_friendlyMessage(e.code));
     }

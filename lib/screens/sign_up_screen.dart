@@ -162,8 +162,9 @@ class _SignUpScreenState extends State<SignUpScreen> {
                     validator: (val) {
                       final text = val?.trim() ?? '';
                       if (text.isEmpty) return 'Please enter your full name.';
-                      if (text.length < 3)
+                      if (text.length < 3) {
                         return 'Name must be at least 3 characters.';
+                      }
                       return null;
                     },
                   ),
@@ -189,8 +190,9 @@ class _SignUpScreenState extends State<SignUpScreen> {
                     validator: (val) {
                       final text = val?.trim() ?? '';
                       if (text.isEmpty) return 'Please enter your student ID.';
-                      if (text.length < 7)
+                      if (text.length < 7) {
                         return 'Please enter a valid student ID.';
+                      }
                       return null;
                     },
                   ),
@@ -270,8 +272,9 @@ class _SignUpScreenState extends State<SignUpScreen> {
                     validator: (val) {
                       final text = val ?? '';
                       if (text.isEmpty) return 'Please enter a password.';
-                      if (text.length < 6)
+                      if (text.length < 6) {
                         return 'Password must be at least 6 characters.';
+                      }
                       return null;
                     },
                   ),
@@ -306,10 +309,12 @@ class _SignUpScreenState extends State<SignUpScreen> {
                       ),
                     ),
                     validator: (val) {
-                      if (val == null || val.isEmpty)
+                      if (val == null || val.isEmpty) {
                         return 'Please confirm your password.';
-                      if (val != _passwordController.text)
+                      }
+                      if (val != _passwordController.text) {
                         return 'Passwords do not match.';
+                      }
                       return null;
                     },
                   ),
