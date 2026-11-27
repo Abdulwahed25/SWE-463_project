@@ -1,9 +1,8 @@
 import '../models/listing.dart';
 
 /// The app only talks to listings through this class.
-/// Phase 3 uses LocalListingRepository (saved on the device).
-/// Phase 4 will add a FirestoreListingRepository with the same methods,
-/// so the screens and the provider do not need to change.
+/// The app uses FirestoreListingRepository; tests use a fake with the same
+/// methods, so the screens and the provider do not depend on Firestore.
 abstract class ListingRepository {
   Future<List<Listing>> fetchListings();
 
@@ -11,8 +10,8 @@ abstract class ListingRepository {
 
   Future<void> updateListing(Listing listing);
 
-  /// Ids of the listings the user saved with the heart button.
-  Future<Set<String>> fetchFavoriteIds();
+  /// Ids of the listings [userId] saved with the heart button.
+  Future<Set<String>> fetchFavoriteIds(String userId);
 
-  Future<void> saveFavoriteIds(Set<String> ids);
+  Future<void> saveFavoriteIds(String userId, Set<String> ids);
 }
