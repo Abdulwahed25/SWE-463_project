@@ -14,6 +14,7 @@ class Listing {
     required this.sellerName,
     required this.createdAt,
     this.status = ListingStatus.available,
+    this.photo = '',
   });
 
   final String id;
@@ -28,7 +29,13 @@ class Listing {
   final DateTime createdAt;
   final ListingStatus status;
 
+  /// The item photo as a base64-encoded JPEG, or '' when there is no photo.
+  /// Photos are resized and compressed before saving (see PhotoPicker),
+  /// so they fit inside one Firestore document.
+  final String photo;
+
   bool get isSold => status == ListingStatus.sold;
+  bool get hasPhoto => photo.isNotEmpty;
 
   /// Returns a copy with a new status (used by "Mark as sold").
   Listing copyWith({ListingStatus? status}) {
@@ -44,10 +51,11 @@ class Listing {
       sellerName: sellerName,
       createdAt: createdAt,
       status: status ?? this.status,
+      photo: photo,
     );
   }
 
-  /// Converts the listing to a map so it can be saved (and later sent to Firestore).
+  /// Converts the listing to a map so it can be saved in Firestore.
   Map<String, dynamic> toMap() {
     return {
       'id': id,
@@ -61,6 +69,7 @@ class Listing {
       'sellerName': sellerName,
       'createdAt': createdAt.toIso8601String(),
       'status': status.name,
+      'photo': photo,
     };
   }
 
@@ -77,6 +86,7 @@ class Listing {
       sellerName: map['sellerName'] as String,
       createdAt: DateTime.parse(map['createdAt'] as String),
       status: map['status'] == 'sold' ? ListingStatus.sold : ListingStatus.available,
+      photo: map['photo'] as String? ?? '',
     );
   }
 }

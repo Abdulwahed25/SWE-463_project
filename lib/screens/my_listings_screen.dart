@@ -65,6 +65,7 @@ class _MyListingsScreenState extends State<MyListingsScreen> {
           final l = mine[i];
           return ListingCard(
             title: l.title,
+      photo: l.photo,
             price: l.price,
             location: '${l.location} · ${timeAgo(l.createdAt)}',
             isSold: l.isSold,

@@ -188,6 +188,7 @@ class SellerProfileScreen extends StatelessWidget {
                     final item = sellerListings[index];
                     return ListingCard(
                       title: item.title,
+      photo: item.photo,
                       price: item.price,
                       location: item.location,
                       onTap: () {

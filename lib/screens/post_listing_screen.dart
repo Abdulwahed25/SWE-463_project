@@ -5,6 +5,8 @@ import '../app_routes.dart';
 import '../models/category.dart';
 import '../providers/listings_provider.dart';
 import '../theme.dart';
+import '../utils/photo_picker.dart';
+import '../widgets/photo_view.dart';
 
 /// Post Listing form. Form fields and the "posting" flag are local (setState).
 /// On success the new listing is added to ListingsProvider, so it appears on Home.
@@ -23,7 +25,9 @@ class _PostListingScreenState extends State<PostListingScreen> {
   final _descriptionController = TextEditingController();
   String? _category;
   String? _condition;
+  String _photo = ''; // base64 JPEG, '' when no photo is chosen
   bool _isPosting = false;
+  final _photoPicker = PhotoPicker();
 
   @override
   void dispose() {
@@ -32,6 +36,21 @@ class _PostListingScreenState extends State<PostListingScreen> {
     _locationController.dispose();
     _descriptionController.dispose();
     super.dispose();
+  }
+
+  Future<void> _pickPhoto() async {
+    final messenger = ScaffoldMessenger.of(context);
+    try {
+      final photo = await _photoPicker.pickFromGallery();
+      if (photo == null || !mounted) return; // cancelled
+      setState(() => _photo = photo);
+    } on PhotoTooLargeException catch (e) {
+      messenger.showSnackBar(SnackBar(content: Text(e.toString())));
+    } catch (e) {
+      messenger.showSnackBar(
+        const SnackBar(content: Text("Couldn't open your photos. Check the app's photo permission.")),
+      );
+    }
   }
 
   Future<void> _submit() async {
@@ -50,6 +69,7 @@ class _PostListingScreenState extends State<PostListingScreen> {
             condition: _condition!,
             location: _locationController.text,
             description: _descriptionController.text,
+            photo: _photo,
           );
       if (!mounted) return;
       Navigator.pushReplacementNamed(context, AppRoutes.posted, arguments: listing.id);
@@ -73,27 +93,43 @@ class _PostListingScreenState extends State<PostListingScreen> {
           child: ListView(
             padding: const EdgeInsets.all(16),
             children: [
-              // Photo box. Real photo upload comes with Firebase Storage in Phase 4.
+              // Photo box: tap to choose a photo; the chosen photo is shown here.
               InkWell(
+                key: const Key('post_photo'),
                 borderRadius: BorderRadius.circular(kSouqRadius),
-                onTap: () => ScaffoldMessenger.of(context).showSnackBar(
-                  const SnackBar(content: Text('Adding photos will be available in the next version.')),
-                ),
+                onTap: _pickPhoto,
                 child: Container(
-                  height: 120,
+                  height: _photo.isEmpty ? 120 : 200,
+                  clipBehavior: Clip.antiAlias,
                   decoration: BoxDecoration(
                     color: SouqColors.field,
                     borderRadius: BorderRadius.circular(kSouqRadius),
                     border: Border.all(color: SouqColors.border),
                   ),
-                  child: const Column(
-                    mainAxisAlignment: MainAxisAlignment.center,
-                    children: [
-                      Icon(Icons.add_a_photo_outlined, color: SouqColors.teal, size: 32),
-                      SizedBox(height: 6),
-                      Text('Add photos (optional)'),
-                    ],
-                  ),
+                  child: _photo.isEmpty
+                      ? const Column(
+                          mainAxisAlignment: MainAxisAlignment.center,
+                          children: [
+                            Icon(Icons.add_a_photo_outlined, color: SouqColors.teal, size: 32),
+                            SizedBox(height: 6),
+                            Text('Add a photo (optional)'),
+                          ],
+                        )
+                      : Stack(
+                          fit: StackFit.expand,
+                          children: [
+                            PhotoView(photo: _photo),
+                            Positioned(
+                              top: 8,
+                              right: 8,
+                              child: IconButton.filledTonal(
+                                tooltip: 'Remove photo',
+                                icon: const Icon(Icons.close),
+                                onPressed: () => setState(() => _photo = ''),
+                              ),
+                            ),
+                          ],
+                        ),
                 ),
               ),
               const SizedBox(height: 16),

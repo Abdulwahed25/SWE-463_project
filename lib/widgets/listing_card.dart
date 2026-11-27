@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 
 import '../theme.dart';
+import 'photo_view.dart';
 import 'status_badge.dart';
 
 /// Card used in the Home and My Listings grids.
@@ -11,6 +12,7 @@ class ListingCard extends StatelessWidget {
     required this.title,
     required this.price,
     required this.location,
+    this.photo = '',
     this.isSold = false,
     this.isFavorite = false,
     this.onTap,
@@ -20,6 +22,7 @@ class ListingCard extends StatelessWidget {
   final String title;
   final double price;
   final String location;
+  final String photo;
   final bool isSold;
   final bool isFavorite;
   final VoidCallback? onTap;
@@ -35,15 +38,10 @@ class ListingCard extends StatelessWidget {
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              // Photo area (placeholder until real photos are added)
+              // Photo area (grey placeholder when the listing has no photo)
               Stack(
                 children: [
-                  Container(
-                    height: 118,
-                    width: double.infinity,
-                    color: const Color(0xFFE2EBED),
-                    child: const Icon(Icons.image_outlined, size: 44, color: SouqColors.teal),
-                  ),
+                  PhotoView(photo: photo, height: 118, width: double.infinity),
                   Positioned(top: 8, left: 8, child: StatusBadge(isSold: isSold)),
                   Positioned(
                     top: 4,

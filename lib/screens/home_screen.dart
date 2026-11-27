@@ -149,6 +149,16 @@ class _HomeScreenState extends State<HomeScreen> {
         onPressed: () => setState(() => _savedOnly = false),
       );
     }
+    // Empty marketplace (nothing posted yet, no search or filter used)
+    if (listings.isEmpty && provider.search.trim().isEmpty && !provider.filter.isActive) {
+      return EmptyState(
+        icon: Icons.storefront_outlined,
+        title: 'No listings yet',
+        message: 'Be the first to sell something. Press Post to add a listing.',
+        buttonText: 'Refresh',
+        onPressed: provider.load,
+      );
+    }
     // Empty / no results state
     if (listings.isEmpty) {
       return EmptyState(
@@ -178,6 +188,7 @@ class _HomeScreenState extends State<HomeScreen> {
   Widget _card(BuildContext context, Listing l) {
     return ListingCard(
       title: l.title,
+      photo: l.photo,
       price: l.price,
       location: '${l.location} · ${timeAgo(l.createdAt)}',
       isSold: l.isSold,

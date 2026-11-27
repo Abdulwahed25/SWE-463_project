@@ -10,6 +10,7 @@ import '../theme.dart';
 import '../utils/auth_dialog.dart';
 import '../utils/format.dart';
 import '../widgets/empty_state.dart';
+import '../widgets/photo_view.dart';
 import '../widgets/seller_payment_sheet.dart';
 import '../widgets/status_badge.dart';
 
@@ -98,15 +99,7 @@ class ListingDetailScreen extends StatelessWidget {
       ),
       body: ListView(
         children: [
-          Container(
-            height: 220,
-            color: const Color(0xFFE2EBED),
-            child: const Icon(
-              Icons.image_outlined,
-              size: 64,
-              color: SouqColors.teal,
-            ),
-          ),
+          PhotoView(photo: listing.photo, height: 260, width: double.infinity, iconSize: 64),
           Padding(
             padding: const EdgeInsets.all(16),
             child: Column(
