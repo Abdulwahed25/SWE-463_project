@@ -2,19 +2,19 @@ import 'package:flutter/material.dart';
 
 import '../theme.dart';
 
-/// One button on a placeholder page.
-class PlaceholderAction {
-  const PlaceholderAction(this.label, this.onPressed, {this.primary = false});
+/// One button on a MessagePage.
+class MessagePageAction {
+  const MessagePageAction(this.label, this.onPressed, {this.primary = false});
 
   final String label;
   final VoidCallback onPressed;
   final bool primary;
 }
 
-/// Simple page used by the Phase 2 starter screens:
+/// A simple full-screen message (used by the Posted screen):
 /// an icon, a title, a short text and buttons to move to other screens.
-class PlaceholderPage extends StatelessWidget {
-  const PlaceholderPage({
+class MessagePage extends StatelessWidget {
+  const MessagePage({
     super.key,
     required this.icon,
     required this.title,
@@ -25,7 +25,7 @@ class PlaceholderPage extends StatelessWidget {
   final IconData icon;
   final String title;
   final String message;
-  final List<PlaceholderAction> actions;
+  final List<MessagePageAction> actions;
 
   @override
   Widget build(BuildContext context) {

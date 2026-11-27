@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 
 import '../app_routes.dart';
-import '../widgets/placeholder_page.dart';
+import '../widgets/message_page.dart';
 
 /// Success screen shown after a listing is posted.
 class PostedScreen extends StatelessWidget {
@@ -14,22 +14,22 @@ class PostedScreen extends StatelessWidget {
 
     return Scaffold(
       body: SafeArea(
-        child: PlaceholderPage(
+        child: MessagePage(
           icon: Icons.check_circle_outline,
           title: 'Your listing is live!',
           message: 'Students can now find your item on Home and message you about it.',
           actions: [
             if (listingId != null)
-              PlaceholderAction(
+              MessagePageAction(
                 'View listing',
                 () => Navigator.pushReplacementNamed(context, AppRoutes.listingDetail, arguments: listingId),
                 primary: true,
               ),
-            PlaceholderAction(
+            MessagePageAction(
               'View my listings',
               () => Navigator.pushReplacementNamed(context, AppRoutes.myListings),
             ),
-            PlaceholderAction(
+            MessagePageAction(
               'Back to Home',
               () => Navigator.pushNamedAndRemoveUntil(context, AppRoutes.home, (route) => false),
             ),
