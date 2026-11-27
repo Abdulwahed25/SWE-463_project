@@ -1,0 +1,49 @@
+rules_version = '2';
+
+// Security rules for Souq (Cloud Firestore).
+// Guests can browse listings. Everything else needs a signed-in student.
+service cloud.firestore {
+  match /databases/{database}/documents {
+
+    function signedIn() {
+      return request.auth != null;
+    }
+
+    function isParticipant(chatId) {
+      return request.auth.uid in
+        get(/databases/$(database)/documents/chats/$(chatId)).data.participantIds;
+    }
+
+    // Student profiles. Signed-in students can read them (a buyer needs the
+    // seller's name and IBAN). Only the owner can create or change their own.
+    match /users/{uid} {
+      allow read: if signedIn();
+      allow create, update: if signedIn() && request.auth.uid == uid;
+    }
+
+    // Listings. Anyone can browse. Only the seller can post, edit or delete.
+    match /listings/{listingId} {
+      allow read: if true;
+      allow create: if signedIn()
+        && request.resource.data.sellerId == request.auth.uid;
+      allow update, delete: if signedIn()
+        && resource.data.sellerId == request.auth.uid;
+    }
+
+    // Chats. Only the buyer and the seller in the chat can see or change it.
+    match /chats/{chatId} {
+      allow read: if signedIn()
+        && (resource == null || request.auth.uid in resource.data.participantIds);
+      allow create: if signedIn()
+        && request.auth.uid in request.resource.data.participantIds;
+      allow update: if signedIn()
+        && request.auth.uid in resource.data.participantIds;
+
+      match /messages/{messageId} {
+        allow read: if signedIn() && isParticipant(chatId);
+        allow create: if signedIn() && isParticipant(chatId)
+          && request.resource.data.senderId == request.auth.uid;
+      }
+    }
+  }
+}
