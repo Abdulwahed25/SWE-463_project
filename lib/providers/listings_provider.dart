@@ -16,11 +16,14 @@ class ListingFilter {
 }
 
 /// Shared state for listings (Provider + ChangeNotifier).
-/// Used by Home, Filter, Post Listing, Listing Detail and My Listings.
+/// Used by Home, Filter, Post Listing, Listing Detail, My Listings and Profile.
 class ListingsProvider extends ChangeNotifier {
   ListingsProvider(this._repository);
 
   final ListingRepository _repository;
+
+  /// The signed-in student, or null for a guest. Set by main.dart.
+  String? _userId;
 
   List<Listing> _all = [];
   bool _isLoading = false;
@@ -78,14 +81,39 @@ class ListingsProvider extends ChangeNotifier {
 
   bool isMine(Listing listing) => listing.sellerId == Session.currentUserId;
 
+  /// Called by main.dart when someone logs in or out: loads their favorites.
+  void setUser(String? userId) {
+    if (userId == _userId) return;
+    _userId = userId;
+    _favoriteIds = {};
+    // Runs while widgets are being built, so load right after the build.
+    Future.microtask(_loadFavorites);
+  }
+
+  Future<void> _loadFavorites() async {
+    final id = _userId;
+    if (id == null) {
+      notifyListeners();
+      return;
+    }
+    try {
+      final ids = await _repository.fetchFavoriteIds(id);
+      if (id != _userId) return; // user changed while loading
+      _favoriteIds = ids;
+    } catch (_) {
+      _favoriteIds = {}; // favorites are optional; the listings still show
+    }
+    notifyListeners();
+  }
+
   /// Loads listings from the repository and shows loading / error states.
+  /// Also used by pull-to-refresh on Home to get other students' new listings.
   Future<void> load() async {
     _isLoading = true;
     _error = null;
     notifyListeners();
     try {
       _all = await _repository.fetchListings();
-      _favoriteIds = await _repository.fetchFavoriteIds();
     } catch (e) {
       _error = 'Check your connection and try again.';
     }
@@ -101,6 +129,7 @@ class ListingsProvider extends ChangeNotifier {
     required String condition,
     required String location,
     required String description,
+    String photo = '',
   }) async {
     final listing = Listing(
       id: DateTime.now().microsecondsSinceEpoch.toString(),
@@ -113,6 +142,7 @@ class ListingsProvider extends ChangeNotifier {
       sellerId: Session.currentUserId,
       sellerName: Session.currentUserName,
       createdAt: DateTime.now(),
+      photo: photo,
     );
     await _repository.addListing(listing);
     _all.insert(0, listing);
@@ -131,12 +161,23 @@ class ListingsProvider extends ChangeNotifier {
   }
 
   /// Adds or removes a listing from favorites and saves the change.
-  Future<void> toggleFavorite(String id) async {
+  /// Returns false if saving fails; then the heart goes back to how it was.
+  Future<bool> toggleFavorite(String id) async {
+    final userId = _userId;
+    if (userId == null) return false; // guests are asked to log in first
+    final before = _favoriteIds;
     final updated = {..._favoriteIds};
     if (!updated.remove(id)) updated.add(id);
     _favoriteIds = updated; // update the UI right away
     notifyListeners();
-    await _repository.saveFavoriteIds(updated);
+    try {
+      await _repository.saveFavoriteIds(userId, updated);
+      return true;
+    } catch (e) {
+      _favoriteIds = before;
+      notifyListeners();
+      return false;
+    }
   }
 
   void setSearch(String text) {
