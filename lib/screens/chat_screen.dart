@@ -1,9 +1,9 @@
 import 'package:flutter/material.dart';
-import 'package:image_picker/image_picker.dart';
 import 'package:provider/provider.dart';
 
 import '../providers/chat_provider.dart';
 import '../utils/format.dart';
+import '../utils/photo_picker.dart';
 import '../widgets/chat_bubble.dart';
 import '../widgets/empty_state.dart';
 import 'seller_profile_screen.dart';
@@ -32,7 +32,7 @@ class ChatScreen extends StatefulWidget {
 
 class _ChatScreenState extends State<ChatScreen> {
   final _textController = TextEditingController();
-  final _picker = ImagePicker();
+  final _photoPicker = PhotoPicker();
   late final ChatProvider _chatProvider;
 
   @override
@@ -51,106 +51,36 @@ class _ChatScreenState extends State<ChatScreen> {
     super.dispose();
   }
 
-  Future<void> _pickAndSendImage() async {
+  /// Lets the student choose a photo and sends it (with any typed text).
+  Future<void> _pickAndSendPhoto() async {
     final messenger = ScaffoldMessenger.of(context);
+    String? photo;
     try {
-      final XFile? image = await _picker.pickImage(
-        source: ImageSource.gallery,
-        maxWidth: 1024,
-        maxHeight: 1024,
-        imageQuality: 80,
-      );
-
-      if (image == null) return;
-
-      final ok = await _chatProvider.sendMessage(
-        chatId: widget.chatId,
-        text: _textController.text.trim(),
-        imageUrl: image.path,
-      );
-
-      if (!mounted) return;
-      if (ok) {
-        _textController.clear();
-      } else {
-        messenger
-          ..hideCurrentSnackBar()
-          ..showSnackBar(
-            const SnackBar(content: Text('Image not sent. Please try again.')),
-          );
-      }
+      photo = await _photoPicker.pickFromGallery();
+    } on PhotoTooLargeException catch (e) {
+      messenger.showSnackBar(SnackBar(content: Text(e.toString())));
+      return;
     } catch (e) {
-      if (!mounted) return;
-      messenger
-        ..hideCurrentSnackBar()
-        ..showSnackBar(
-          SnackBar(content: Text('Could not pick image: $e')),
-        );
-    }
-  }
-
-  Future<void> _pickAndSendVideo() async {
-    final messenger = ScaffoldMessenger.of(context);
-    try {
-      final XFile? video = await _picker.pickVideo(
-        source: ImageSource.gallery,
-        maxDuration: const Duration(minutes: 2),
+      messenger.showSnackBar(
+        const SnackBar(content: Text("Couldn't open your photos. Check the app's photo permission.")),
       );
-
-      if (video == null) return;
-
-      final ok = await _chatProvider.sendMessage(
-        chatId: widget.chatId,
-        text: _textController.text.trim(),
-        videoUrl: video.path,
-      );
-
-      if (!mounted) return;
-      if (ok) {
-        _textController.clear();
-      } else {
-        messenger
-          ..hideCurrentSnackBar()
-          ..showSnackBar(
-            const SnackBar(content: Text('Video not sent. Please try again.')),
-          );
-      }
-    } catch (e) {
-      if (!mounted) return;
-      messenger
-        ..hideCurrentSnackBar()
-        ..showSnackBar(
-          SnackBar(content: Text('Could not pick video: $e')),
-        );
+      return;
     }
-  }
+    if (photo == null || !mounted) return; // cancelled
 
-  void _showAttachmentOptions() {
-    showModalBottomSheet(
-      context: context,
-      builder: (ctx) => SafeArea(
-        child: Wrap(
-          children: [
-            ListTile(
-              leading: const Icon(Icons.photo_outlined),
-              title: const Text('Send Photo'),
-              onTap: () {
-                Navigator.pop(ctx);
-                _pickAndSendImage();
-              },
-            ),
-            ListTile(
-              leading: const Icon(Icons.videocam_outlined),
-              title: const Text('Send Video'),
-              onTap: () {
-                Navigator.pop(ctx);
-                _pickAndSendVideo();
-              },
-            ),
-          ],
-        ),
-      ),
+    final ok = await _chatProvider.sendMessage(
+      chatId: widget.chatId,
+      text: _textController.text,
+      photo: photo,
     );
+    if (!mounted) return;
+    if (ok) {
+      _textController.clear();
+    } else {
+      messenger
+        ..hideCurrentSnackBar()
+        ..showSnackBar(const SnackBar(content: Text('Photo not sent. Please try again.')));
+    }
   }
 
   Future<void> _send() async {
@@ -226,7 +156,7 @@ class _ChatScreenState extends State<ChatScreen> {
                       Text(
                         '${widget.itemTitle} - ${formatPrice(widget.itemPrice)}',
                         style: theme.textTheme.bodySmall?.copyWith(
-                          color: theme.colorScheme.onSurface.withValues(alpha: 0.7),
+                          color: Colors.white.withValues(alpha: 0.8),
                         ),
                         overflow: TextOverflow.ellipsis,
                       ),
@@ -249,11 +179,11 @@ class _ChatScreenState extends State<ChatScreen> {
               child: Row(
                 children: [
                   IconButton(
-                    key: const Key('chat_attach_media'),
-                    tooltip: 'Attach media',
-                    icon: const Icon(Icons.attach_file_rounded),
+                    key: const Key('chat_send_photo'),
+                    tooltip: 'Send a photo',
+                    icon: const Icon(Icons.photo_outlined),
                     color: theme.colorScheme.primary,
-                    onPressed: chat.isSending ? null : _showAttachmentOptions,
+                    onPressed: chat.isSending ? null : _pickAndSendPhoto,
                   ),
                   Expanded(
                     child: TextField(

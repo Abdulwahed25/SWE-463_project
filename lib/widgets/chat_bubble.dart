@@ -1,40 +1,40 @@
-import 'dart:io';
-import 'package:flutter/foundation.dart' show kIsWeb;
 import 'package:flutter/material.dart';
-import 'package:video_player/video_player.dart';
+
 import '../models/message.dart';
+import 'photo_view.dart';
 
+/// One message in the chat: my messages on the right in teal,
+/// the other person's on the left in grey. A message can have a photo.
 class ChatBubble extends StatelessWidget {
-  final Message message;
-  final bool isMe;
-
   const ChatBubble({
     super.key,
     required this.message,
     required this.isMe,
   });
 
+  final Message message;
+  final bool isMe;
+
   @override
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
-    final hasImage = message.imageUrl != null && message.imageUrl!.isNotEmpty;
-    final hasVideo = message.videoUrl != null && message.videoUrl!.isNotEmpty;
     final hasText = message.text.isNotEmpty;
+    final photoOnly = message.hasPhoto && !hasText;
+    final time =
+        '${message.sentAt.hour.toString().padLeft(2, '0')}:${message.sentAt.minute.toString().padLeft(2, '0')}';
 
     return Align(
       alignment: isMe ? Alignment.centerRight : Alignment.centerLeft,
       child: Container(
         margin: const EdgeInsets.symmetric(horizontal: 12, vertical: 4),
-        padding: (hasImage || hasVideo) && !hasText
+        padding: photoOnly
             ? const EdgeInsets.all(6)
             : const EdgeInsets.symmetric(horizontal: 14, vertical: 10),
         constraints: BoxConstraints(
           maxWidth: MediaQuery.of(context).size.width * 0.75,
         ),
         decoration: BoxDecoration(
-          color: isMe
-              ? theme.colorScheme.primary
-              : theme.colorScheme.surfaceContainerHighest,
+          color: isMe ? theme.colorScheme.primary : theme.colorScheme.surfaceContainerHighest,
           borderRadius: BorderRadius.only(
             topLeft: const Radius.circular(16),
             topRight: const Radius.circular(16),
@@ -43,20 +43,12 @@ class ChatBubble extends StatelessWidget {
           ),
         ),
         child: Column(
-          crossAxisAlignment:
-              isMe ? CrossAxisAlignment.end : CrossAxisAlignment.start,
+          crossAxisAlignment: isMe ? CrossAxisAlignment.end : CrossAxisAlignment.start,
           children: [
-            if (hasImage) ...[
+            if (message.hasPhoto) ...[
               ClipRRect(
                 borderRadius: BorderRadius.circular(12),
-                child: _buildImage(message.imageUrl!),
-              ),
-              if (hasText) const SizedBox(height: 8),
-            ],
-            if (hasVideo) ...[
-              ClipRRect(
-                borderRadius: BorderRadius.circular(12),
-                child: _ChatVideoPlayer(videoPath: message.videoUrl!),
+                child: PhotoView(photo: message.photo, width: 220, height: 220),
               ),
               if (hasText) const SizedBox(height: 8),
             ],
@@ -64,18 +56,15 @@ class ChatBubble extends StatelessWidget {
               Text(
                 message.text,
                 style: TextStyle(
-                  color: isMe
-                      ? theme.colorScheme.onPrimary
-                      : theme.colorScheme.onSurfaceVariant,
+                  color: isMe ? theme.colorScheme.onPrimary : theme.colorScheme.onSurfaceVariant,
                   fontSize: 15,
                 ),
               ),
             const SizedBox(height: 4),
             Padding(
-              padding: EdgeInsets.symmetric(
-                  horizontal: (hasImage || hasVideo) && !hasText ? 6 : 0),
+              padding: EdgeInsets.symmetric(horizontal: photoOnly ? 6 : 0),
               child: Text(
-                '${message.sentAt.hour.toString().padLeft(2, '0')}:${message.sentAt.minute.toString().padLeft(2, '0')}',
+                time,
                 style: TextStyle(
                   fontSize: 10,
                   color: isMe
@@ -83,103 +72,6 @@ class ChatBubble extends StatelessWidget {
                       : theme.colorScheme.onSurfaceVariant.withValues(alpha: 0.7),
                 ),
               ),
-            ),
-          ],
-        ),
-      ),
-    );
-  }
-
-  Widget _buildImage(String path) {
-    if (kIsWeb || path.startsWith('http') || path.startsWith('blob:')) {
-      return Image.network(
-        path,
-        fit: BoxFit.cover,
-        errorBuilder: (_, __, ___) => const SizedBox(
-          height: 150,
-          width: 200,
-          child: Center(child: Icon(Icons.broken_image_outlined, size: 40)),
-        ),
-      );
-    }
-    return Image.file(
-      File(path),
-      fit: BoxFit.cover,
-      errorBuilder: (_, __, ___) => const SizedBox(
-        height: 150,
-        width: 200,
-        child: Center(child: Icon(Icons.broken_image_outlined, size: 40)),
-      ),
-    );
-  }
-}
-
-class _ChatVideoPlayer extends StatefulWidget {
-  final String videoPath;
-  const _ChatVideoPlayer({required this.videoPath});
-
-  @override
-  State<_ChatVideoPlayer> createState() => _ChatVideoPlayerState();
-}
-
-class _ChatVideoPlayerState extends State<_ChatVideoPlayer> {
-  late VideoPlayerController _controller;
-  bool _isInitialized = false;
-
-  @override
-  void initState() {
-    super.initState();
-    if (kIsWeb || widget.videoPath.startsWith('http') || widget.videoPath.startsWith('blob:')) {
-      _controller = VideoPlayerController.networkUrl(Uri.parse(widget.videoPath));
-    } else {
-      _controller = VideoPlayerController.file(File(widget.videoPath));
-    }
-
-    _controller.initialize().then((_) {
-      if (mounted) setState(() => _isInitialized = true);
-    });
-  }
-
-  @override
-  void dispose() {
-    _controller.dispose();
-    super.dispose();
-  }
-
-  @override
-  Widget build(BuildContext context) {
-    if (!_isInitialized) {
-      return Container(
-        height: 160,
-        width: 220,
-        color: Colors.black26,
-        child: const Center(child: CircularProgressIndicator(strokeWidth: 2)),
-      );
-    }
-
-    return SizedBox(
-      width: 220,
-      child: AspectRatio(
-        aspectRatio: _controller.value.aspectRatio,
-        child: Stack(
-          alignment: Alignment.center,
-          children: [
-            VideoPlayer(_controller),
-            IconButton(
-              iconSize: 42,
-              icon: Icon(
-                _controller.value.isPlaying
-                    ? Icons.pause_circle_filled
-                    : Icons.play_circle_fill,
-                color: Colors.white.withValues(alpha: 0.85),
-              ),
-              onPressed: () {
-                setState(() {
-                  _controller.value.isPlaying
-                      ? _controller.pause()
-                      : _controller.play();
-                });
-              },
             ),
           ],
         ),
