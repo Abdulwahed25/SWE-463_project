@@ -6,7 +6,11 @@ import '../services/session.dart';
 
 /// The filters chosen in the Home filter sheet.
 class ListingFilter {
-  const ListingFilter({this.category, this.maxPrice, this.availableOnly = false});
+  const ListingFilter({
+    this.category,
+    this.maxPrice,
+    this.availableOnly = false,
+  });
 
   final String? category; // null means all categories
   final double? maxPrice; // null means no limit
@@ -56,7 +60,8 @@ class ListingsProvider extends ChangeNotifier {
           !l.description.toLowerCase().contains(text)) {
         return false;
       }
-      if (_filter.category != null && l.category != _filter.category) return false;
+      if (_filter.category != null && l.category != _filter.category)
+        return false;
       if (_filter.maxPrice != null && l.price > _filter.maxPrice!) return false;
       if (_filter.availableOnly && l.isSold) return false;
       return true;
@@ -67,7 +72,9 @@ class ListingsProvider extends ChangeNotifier {
 
   /// Listings posted by the current user (My Listings).
   List<Listing> get myListings {
-    final mine = _all.where((l) => l.sellerId == Session.currentUserId).toList();
+    final mine = _all
+        .where((l) => l.sellerId == Session.currentUserId)
+        .toList();
     mine.sort((a, b) => b.createdAt.compareTo(a.createdAt));
     return mine;
   }

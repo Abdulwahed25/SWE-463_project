@@ -6,7 +6,12 @@ import 'package:souq/utils/phone.dart';
 
 /// Simulates typing: [before] is the field text with the cursor at the end,
 /// [after] is what the user's keystroke produced (cursor at [cursor] or the end).
-TextEditingValue _type(GroupedDigitsFormatter f, String before, String after, {int? cursor}) {
+TextEditingValue _type(
+  GroupedDigitsFormatter f,
+  String before,
+  String after, {
+  int? cursor,
+}) {
   return f.formatEditUpdate(
     TextEditingValue(
       text: before,
@@ -41,8 +46,14 @@ void main() {
     test('backspace right after a dash deletes the digit before it', () {
       // Cursor after "53-", user presses backspace: the dash is removed, so "3" goes too.
       final result = f.formatEditUpdate(
-        const TextEditingValue(text: '53-034', selection: TextSelection.collapsed(offset: 3)),
-        const TextEditingValue(text: '53034', selection: TextSelection.collapsed(offset: 2)),
+        const TextEditingValue(
+          text: '53-034',
+          selection: TextSelection.collapsed(offset: 3),
+        ),
+        const TextEditingValue(
+          text: '53034',
+          selection: TextSelection.collapsed(offset: 2),
+        ),
       );
       expect(result.text, '50-34');
       expect(result.selection.end, 1);
@@ -58,7 +69,10 @@ void main() {
 
   group('Phone helpers', () {
     test('toStoredPhone builds the international format', () {
-      expect(toStoredPhone(Country.saudiArabia, '53-034-4226'), '+966530344226');
+      expect(
+        toStoredPhone(Country.saudiArabia, '53-034-4226'),
+        '+966530344226',
+      );
       expect(toStoredPhone(Country.saudiArabia, ''), '');
     });
 

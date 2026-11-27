@@ -48,7 +48,8 @@ class PhoneField extends StatelessWidget {
 
     // Re-format what was typed for the new country's length and grouping.
     var digits = digitsOnly(controller.text);
-    if (digits.length > picked.length) digits = digits.substring(0, picked.length);
+    if (digits.length > picked.length)
+      digits = digits.substring(0, picked.length);
     controller.text = formatLocalPhone(picked, digits);
     onCountryChanged(picked);
   }
@@ -59,11 +60,20 @@ class PhoneField extends StatelessWidget {
       controller: controller,
       keyboardType: TextInputType.phone,
       textInputAction: textInputAction,
-      inputFormatters: [GroupedDigitsFormatter(groups: country.groups, separator: '-', cleanPrefix: _cleanPrefix)],
+      inputFormatters: [
+        GroupedDigitsFormatter(
+          groups: country.groups,
+          separator: '-',
+          cleanPrefix: _cleanPrefix,
+        ),
+      ],
       style: const TextStyle(fontSize: 16, letterSpacing: 0.5),
       decoration: InputDecoration(
         hintText: country.example,
-        prefixIcon: _CountryButton(country: country, onTap: () => _pickCountry(context)),
+        prefixIcon: _CountryButton(
+          country: country,
+          onTap: () => _pickCountry(context),
+        ),
         prefixIconConstraints: const BoxConstraints(minWidth: 0, minHeight: 48),
       ),
       validator: (value) => ProfileValidators.phone(value, country),
@@ -85,7 +95,9 @@ class _CountryButton extends StatelessWidget {
       label: 'Country code +${country.dialCode}, tap to change',
       child: InkWell(
         onTap: onTap,
-        borderRadius: const BorderRadius.horizontal(left: Radius.circular(kSouqRadius)),
+        borderRadius: const BorderRadius.horizontal(
+          left: Radius.circular(kSouqRadius),
+        ),
         child: Padding(
           padding: const EdgeInsets.only(left: 12, right: 4),
           child: Row(
@@ -95,7 +107,11 @@ class _CountryButton extends StatelessWidget {
               const SizedBox(width: 6),
               Text(
                 '+${country.dialCode}',
-                style: const TextStyle(fontSize: 15, fontWeight: FontWeight.w600, color: SouqColors.text),
+                style: const TextStyle(
+                  fontSize: 15,
+                  fontWeight: FontWeight.w600,
+                  color: SouqColors.text,
+                ),
               ),
               const Icon(Icons.arrow_drop_down, color: SouqColors.subText),
               const SizedBox(width: 4),
@@ -123,7 +139,10 @@ class _CountryPicker extends StatelessWidget {
         children: [
           const Padding(
             padding: EdgeInsets.only(bottom: 8),
-            child: Text('Choose country code', style: TextStyle(fontSize: 17, fontWeight: FontWeight.bold)),
+            child: Text(
+              'Choose country code',
+              style: TextStyle(fontSize: 17, fontWeight: FontWeight.bold),
+            ),
           ),
           Flexible(
             child: ListView(
@@ -131,10 +150,15 @@ class _CountryPicker extends StatelessWidget {
               children: [
                 for (final country in Country.all)
                   ListTile(
-                    leading: Text(country.flag, style: const TextStyle(fontSize: 24)),
+                    leading: Text(
+                      country.flag,
+                      style: const TextStyle(fontSize: 24),
+                    ),
                     title: Text(country.name),
                     subtitle: Text('+${country.dialCode}'),
-                    trailing: country == selected ? const Icon(Icons.check, color: SouqColors.teal) : null,
+                    trailing: country == selected
+                        ? const Icon(Icons.check, color: SouqColors.teal)
+                        : null,
                     onTap: () => Navigator.pop(context, country),
                   ),
               ],

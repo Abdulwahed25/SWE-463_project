@@ -27,7 +27,11 @@ String formatDigitGroups(String digits, List<int> groups, String separator) {
 /// - inserts the separators automatically ("53-034-4226", "03 8000 0000 ...")
 /// - keeps the cursor in the right place, also when editing in the middle.
 class GroupedDigitsFormatter extends TextInputFormatter {
-  GroupedDigitsFormatter({required this.groups, required this.separator, this.cleanPrefix});
+  GroupedDigitsFormatter({
+    required this.groups,
+    required this.separator,
+    this.cleanPrefix,
+  });
 
   final List<int> groups;
   final String separator;
@@ -39,9 +43,14 @@ class GroupedDigitsFormatter extends TextInputFormatter {
   int get maxDigits => groups.fold(0, (sum, g) => sum + g);
 
   @override
-  TextEditingValue formatEditUpdate(TextEditingValue oldValue, TextEditingValue newValue) {
+  TextEditingValue formatEditUpdate(
+    TextEditingValue oldValue,
+    TextEditingValue newValue,
+  ) {
     var text = newValue.text;
-    var cursor = newValue.selection.isValid ? newValue.selection.end : text.length;
+    var cursor = newValue.selection.isValid
+        ? newValue.selection.end
+        : text.length;
 
     // Backspace right after a separator: also delete the digit before it,
     // otherwise re-formatting would put the separator straight back.
@@ -75,7 +84,10 @@ class GroupedDigitsFormatter extends TextInputFormatter {
 
     if (cleanPrefix != null) {
       final cleaned = cleanPrefix!(digits);
-      digitsBeforeCursor = max(0, digitsBeforeCursor - (digits.length - cleaned.length));
+      digitsBeforeCursor = max(
+        0,
+        digitsBeforeCursor - (digits.length - cleaned.length),
+      );
       digits = cleaned;
     }
     if (digits.length > maxDigits) digits = digits.substring(0, maxDigits);

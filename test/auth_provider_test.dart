@@ -19,7 +19,10 @@ void main() {
 
       expect(auth.isAuthenticated, isFalse);
 
-      final ok = await auth.login(email: 'ahmed@kfupm.edu.sa', password: 'password123');
+      final ok = await auth.login(
+        email: 'ahmed@kfupm.edu.sa',
+        password: 'password123',
+      );
 
       expect(ok, isTrue);
       expect(auth.isAuthenticated, isTrue);

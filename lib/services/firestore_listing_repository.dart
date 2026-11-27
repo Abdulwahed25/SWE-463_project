@@ -7,16 +7,21 @@ import 'listing_repository.dart';
 /// Favorites are saved on the student's profile as users/{uid}.favoriteIds.
 class FirestoreListingRepository implements ListingRepository {
   FirestoreListingRepository({FirebaseFirestore? firestore})
-      : _db = firestore ?? FirebaseFirestore.instance;
+    : _db = firestore ?? FirebaseFirestore.instance;
 
   final FirebaseFirestore _db;
 
-  CollectionReference<Map<String, dynamic>> get _listings => _db.collection('listings');
+  CollectionReference<Map<String, dynamic>> get _listings =>
+      _db.collection('listings');
 
   @override
   Future<List<Listing>> fetchListings() async {
-    final snapshot = await _listings.orderBy('createdAt', descending: true).get();
-    return snapshot.docs.map((doc) => Listing.fromMap({...doc.data(), 'id': doc.id})).toList();
+    final snapshot = await _listings
+        .orderBy('createdAt', descending: true)
+        .get();
+    return snapshot.docs
+        .map((doc) => Listing.fromMap({...doc.data(), 'id': doc.id}))
+        .toList();
   }
 
   @override
@@ -38,9 +43,8 @@ class FirestoreListingRepository implements ListingRepository {
 
   @override
   Future<void> saveFavoriteIds(String userId, Set<String> ids) {
-    return _db
-        .collection('users')
-        .doc(userId)
-        .set({'favoriteIds': ids.toList()}, SetOptions(merge: true));
+    return _db.collection('users').doc(userId).set({
+      'favoriteIds': ids.toList(),
+    }, SetOptions(merge: true));
   }
 }

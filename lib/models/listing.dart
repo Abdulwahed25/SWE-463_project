@@ -85,7 +85,9 @@ class Listing {
       sellerId: map['sellerId'] as String,
       sellerName: map['sellerName'] as String,
       createdAt: DateTime.parse(map['createdAt'] as String),
-      status: map['status'] == 'sold' ? ListingStatus.sold : ListingStatus.available,
+      status: map['status'] == 'sold'
+          ? ListingStatus.sold
+          : ListingStatus.available,
       photo: map['photo'] as String? ?? '',
     );
   }

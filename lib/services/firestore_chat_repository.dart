@@ -10,23 +10,31 @@ import 'chat_repository.dart';
 /// Firestore streams (snapshots) make new messages appear live on both phones.
 class FirestoreChatRepository implements ChatRepository {
   FirestoreChatRepository({FirebaseFirestore? firestore})
-      : _db = firestore ?? FirebaseFirestore.instance;
+    : _db = firestore ?? FirebaseFirestore.instance;
 
   final FirebaseFirestore _db;
 
-  CollectionReference<Map<String, dynamic>> get _chats => _db.collection('chats');
+  CollectionReference<Map<String, dynamic>> get _chats =>
+      _db.collection('chats');
 
   @override
   Stream<List<Chat>> watchChats(String userId) {
-    return _chats.where('participantIds', arrayContains: userId).snapshots().map((snapshot) {
-      final chats = snapshot.docs
-          .map((doc) => Chat.fromMap(doc.id, doc.data()))
-          // A chat with no messages yet is only shown to the buyer who opened it.
-          .where((c) => c.lastMessage.isNotEmpty || c.participantIds.first == userId)
-          .toList();
-      chats.sort((a, b) => b.lastMessageAt.compareTo(a.lastMessageAt));
-      return chats;
-    });
+    return _chats
+        .where('participantIds', arrayContains: userId)
+        .snapshots()
+        .map((snapshot) {
+          final chats = snapshot.docs
+              .map((doc) => Chat.fromMap(doc.id, doc.data()))
+              // A chat with no messages yet is only shown to the buyer who opened it.
+              .where(
+                (c) =>
+                    c.lastMessage.isNotEmpty ||
+                    c.participantIds.first == userId,
+              )
+              .toList();
+          chats.sort((a, b) => b.lastMessageAt.compareTo(a.lastMessageAt));
+          return chats;
+        });
   }
 
   @override
@@ -37,8 +45,11 @@ class FirestoreChatRepository implements ChatRepository {
         .orderBy('sentAt', descending: true)
         .limit(200)
         .snapshots()
-        .map((snapshot) =>
-            snapshot.docs.map((doc) => Message.fromMap(doc.id, doc.data())).toList());
+        .map(
+          (snapshot) => snapshot.docs
+              .map((doc) => Message.fromMap(doc.id, doc.data()))
+              .toList(),
+        );
   }
 
   @override

@@ -34,15 +34,18 @@ class SellerProfileScreen extends StatelessWidget {
     }).toList();
 
     final initials = sellerName.trim().isNotEmpty
-        ? sellerName.trim().split(' ').take(2).map((e) => e[0].toUpperCase()).join()
+        ? sellerName
+              .trim()
+              .split(' ')
+              .take(2)
+              .map((e) => e[0].toUpperCase())
+              .join()
         : '?';
 
     final sellerIban = iban ?? 'SA0380000000608010167519';
 
     return Scaffold(
-      appBar: AppBar(
-        title: const Text('Seller Profile'),
-      ),
+      appBar: AppBar(title: const Text('Seller Profile')),
       body: CustomScrollView(
         slivers: [
           SliverToBoxAdapter(
@@ -56,13 +59,18 @@ class SellerProfileScreen extends StatelessWidget {
                     foregroundColor: theme.colorScheme.onPrimaryContainer,
                     child: Text(
                       initials,
-                      style: const TextStyle(fontSize: 28, fontWeight: FontWeight.bold),
+                      style: const TextStyle(
+                        fontSize: 28,
+                        fontWeight: FontWeight.bold,
+                      ),
                     ),
                   ),
                   const SizedBox(height: 12),
                   Text(
                     sellerName,
-                    style: theme.textTheme.titleLarge?.copyWith(fontWeight: FontWeight.bold),
+                    style: theme.textTheme.titleLarge?.copyWith(
+                      fontWeight: FontWeight.bold,
+                    ),
                   ),
                   const SizedBox(height: 4),
                   Text(
@@ -76,15 +84,24 @@ class SellerProfileScreen extends StatelessWidget {
                     mainAxisAlignment: MainAxisAlignment.center,
                     children: [
                       Container(
-                        padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
+                        padding: const EdgeInsets.symmetric(
+                          horizontal: 16,
+                          vertical: 8,
+                        ),
                         decoration: BoxDecoration(
-                          color: theme.colorScheme.primaryContainer.withValues(alpha: 0.4),
+                          color: theme.colorScheme.primaryContainer.withValues(
+                            alpha: 0.4,
+                          ),
                           borderRadius: BorderRadius.circular(20),
                         ),
                         child: Row(
                           mainAxisSize: MainAxisSize.min,
                           children: [
-                            Icon(Icons.inventory_2_outlined, size: 18, color: theme.colorScheme.primary),
+                            Icon(
+                              Icons.inventory_2_outlined,
+                              size: 18,
+                              color: theme.colorScheme.primary,
+                            ),
                             const SizedBox(width: 6),
                             Text(
                               '${sellerListings.length} Listed Items',
@@ -101,18 +118,25 @@ class SellerProfileScreen extends StatelessWidget {
                   const SizedBox(height: 16),
                   Card(
                     elevation: 0,
-                    color: theme.colorScheme.surfaceContainerHighest.withValues(alpha: 0.5),
+                    color: theme.colorScheme.surfaceContainerHighest.withValues(
+                      alpha: 0.5,
+                    ),
                     shape: RoundedRectangleBorder(
                       borderRadius: BorderRadius.circular(12),
                       side: BorderSide(
-                        color: theme.colorScheme.outlineVariant.withValues(alpha: 0.5),
+                        color: theme.colorScheme.outlineVariant.withValues(
+                          alpha: 0.5,
+                        ),
                       ),
                     ),
                     child: Padding(
                       padding: const EdgeInsets.all(12),
                       child: Row(
                         children: [
-                          Icon(Icons.account_balance_outlined, color: theme.colorScheme.primary),
+                          Icon(
+                            Icons.account_balance_outlined,
+                            color: theme.colorScheme.primary,
+                          ),
                           const SizedBox(width: 12),
                           Expanded(
                             child: Column(
@@ -140,7 +164,9 @@ class SellerProfileScreen extends StatelessWidget {
                             icon: const Icon(Icons.copy_rounded, size: 20),
                             tooltip: 'Copy IBAN',
                             onPressed: () {
-                              Clipboard.setData(ClipboardData(text: sellerIban));
+                              Clipboard.setData(
+                                ClipboardData(text: sellerIban),
+                              );
                               ScaffoldMessenger.of(context).showSnackBar(
                                 const SnackBar(
                                   content: Text('IBAN copied to clipboard'),
@@ -158,7 +184,10 @@ class SellerProfileScreen extends StatelessWidget {
                     alignment: Alignment.centerLeft,
                     child: Text(
                       'Listings for sale',
-                      style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
+                      style: TextStyle(
+                        fontSize: 18,
+                        fontWeight: FontWeight.bold,
+                      ),
                     ),
                   ),
                   const SizedBox(height: 8),
@@ -183,25 +212,22 @@ class SellerProfileScreen extends StatelessWidget {
                   mainAxisSpacing: 12,
                   childAspectRatio: 0.72,
                 ),
-                delegate: SliverChildBuilderDelegate(
-                  (context, index) {
-                    final item = sellerListings[index];
-                    return ListingCard(
-                      title: item.title,
-      photo: item.photo,
-                      price: item.price,
-                      location: item.location,
-                      onTap: () {
-                        Navigator.pushNamed(
-                          context,
-                          AppRoutes.listingDetail,
-                          arguments: item.id,
-                        );
-                      },
-                    );
-                  },
-                  childCount: sellerListings.length,
-                ),
+                delegate: SliverChildBuilderDelegate((context, index) {
+                  final item = sellerListings[index];
+                  return ListingCard(
+                    title: item.title,
+                    photo: item.photo,
+                    price: item.price,
+                    location: item.location,
+                    onTap: () {
+                      Navigator.pushNamed(
+                        context,
+                        AppRoutes.listingDetail,
+                        arguments: item.id,
+                      );
+                    },
+                  );
+                }, childCount: sellerListings.length),
               ),
             ),
         ],

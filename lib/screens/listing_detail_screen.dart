@@ -49,7 +49,9 @@ class ListingDetailScreen extends StatelessWidget {
       );
     } catch (e) {
       messenger.showSnackBar(
-        const SnackBar(content: Text("Couldn't update the listing. Try again.")),
+        const SnackBar(
+          content: Text("Couldn't update the listing. Try again."),
+        ),
       );
     }
   }
@@ -99,7 +101,12 @@ class ListingDetailScreen extends StatelessWidget {
       ),
       body: ListView(
         children: [
-          PhotoView(photo: listing.photo, height: 260, width: double.infinity, iconSize: 64),
+          PhotoView(
+            photo: listing.photo,
+            height: 260,
+            width: double.infinity,
+            iconSize: 64,
+          ),
           Padding(
             padding: const EdgeInsets.all(16),
             child: Column(
@@ -149,7 +156,9 @@ class ListingDetailScreen extends StatelessWidget {
     final navigator = Navigator.of(context);
     final messenger = ScaffoldMessenger.of(context);
     try {
-      final chat = await context.read<ChatProvider>().openChatForListing(listing);
+      final chat = await context.read<ChatProvider>().openChatForListing(
+        listing,
+      );
       if (chat == null) return;
       navigator.pushNamed(
         AppRoutes.chat,
@@ -171,8 +180,9 @@ class ListingDetailScreen extends StatelessWidget {
     if (isMine) {
       return [
         FilledButton.icon(
-          onPressed:
-              listing.isSold ? null : () => _confirmMarkSold(context, listing),
+          onPressed: listing.isSold
+              ? null
+              : () => _confirmMarkSold(context, listing),
           icon: const Icon(Icons.check),
           label: Text(listing.isSold ? 'Sold' : 'Mark as sold'),
         ),
@@ -188,8 +198,7 @@ class ListingDetailScreen extends StatelessWidget {
                   showLoginPrompt(
                     context,
                     title: 'Login to Message',
-                    message:
-                        'You must be logged in to chat with the seller and buy items.',
+                    message: 'You must be logged in to chat with the seller and buy items.',
                   );
                   return;
                 }
@@ -207,8 +216,7 @@ class ListingDetailScreen extends StatelessWidget {
                   showLoginPrompt(
                     context,
                     title: 'Login Required',
-                    message:
-                        'Please log in to view and copy seller payment information.',
+                    message: 'Please log in to view and copy seller payment information.',
                   );
                   return;
                 }

@@ -37,7 +37,11 @@ class EmptyState extends StatelessWidget {
             Text(
               title,
               textAlign: TextAlign.center,
-              style: const TextStyle(fontSize: 18, fontWeight: FontWeight.bold, color: SouqColors.text),
+              style: const TextStyle(
+                fontSize: 18,
+                fontWeight: FontWeight.bold,
+                color: SouqColors.text,
+              ),
             ),
             const SizedBox(height: 8),
             Text(
@@ -49,7 +53,9 @@ class EmptyState extends StatelessWidget {
               const SizedBox(height: 20),
               OutlinedButton(
                 onPressed: onPressed,
-                style: OutlinedButton.styleFrom(minimumSize: const Size(160, 48)),
+                style: OutlinedButton.styleFrom(
+                  minimumSize: const Size(160, 48),
+                ),
                 child: Text(buttonText!),
               ),
             ],

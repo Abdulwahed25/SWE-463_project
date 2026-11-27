@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+
 import '../models/chat.dart';
 
 class ChatItemTile extends StatelessWidget {
@@ -20,7 +21,12 @@ class ChatItemTile extends StatelessWidget {
     final theme = Theme.of(context);
     final unread = chat.unreadCount[currentUserId] ?? 0;
     final initials = peerName.trim().isNotEmpty
-        ? peerName.trim().split(' ').take(2).map((e) => e[0].toUpperCase()).join()
+        ? peerName
+              .trim()
+              .split(' ')
+              .take(2)
+              .map((e) => e[0].toUpperCase())
+              .join()
         : '?';
 
     final timeString =
@@ -31,7 +37,10 @@ class ChatItemTile extends StatelessWidget {
       leading: CircleAvatar(
         backgroundColor: theme.colorScheme.primaryContainer,
         foregroundColor: theme.colorScheme.onPrimaryContainer,
-        child: Text(initials, style: const TextStyle(fontWeight: FontWeight.bold)),
+        child: Text(
+          initials,
+          style: const TextStyle(fontWeight: FontWeight.bold),
+        ),
       ),
       title: Text(
         peerName,

@@ -53,8 +53,15 @@ class _MainShellState extends State<MainShell> {
         selectedIndex: _barIndex,
         onDestinationSelected: _onTap,
         destinations: [
-          const NavigationDestination(icon: Icon(Icons.home_outlined), selectedIcon: Icon(Icons.home), label: 'Home'),
-          const NavigationDestination(icon: Icon(Icons.add_box_outlined), label: 'Post'),
+          const NavigationDestination(
+            icon: Icon(Icons.home_outlined),
+            selectedIcon: Icon(Icons.home),
+            label: 'Home',
+          ),
+          const NavigationDestination(
+            icon: Icon(Icons.add_box_outlined),
+            label: 'Post',
+          ),
           NavigationDestination(
             // Red badge with the number of unread messages.
             icon: Badge(
@@ -69,7 +76,11 @@ class _MainShellState extends State<MainShell> {
             ),
             label: 'Messages',
           ),
-          const NavigationDestination(icon: Icon(Icons.person_outline), selectedIcon: Icon(Icons.person), label: 'Profile'),
+          const NavigationDestination(
+            icon: Icon(Icons.person_outline),
+            selectedIcon: Icon(Icons.person),
+            label: 'Profile',
+          ),
         ],
       ),
     );

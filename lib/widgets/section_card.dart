@@ -20,13 +20,21 @@ class SectionCard extends StatelessWidget {
       width: double.infinity,
       decoration: BoxDecoration(
         borderRadius: radius,
-        boxShadow: [BoxShadow(color: Colors.black.withValues(alpha: 0.04), blurRadius: 10, offset: const Offset(0, 2))],
+        boxShadow: [
+          BoxShadow(
+            color: Colors.black.withValues(alpha: 0.04),
+            blurRadius: 10,
+            offset: const Offset(0, 2),
+          ),
+        ],
       ),
       child: Material(
         color: Colors.white,
         borderRadius: radius,
         clipBehavior: Clip.antiAlias,
-        child: padding == null ? child : Padding(padding: padding!, child: child),
+        child: padding == null
+            ? child
+            : Padding(padding: padding!, child: child),
       ),
     );
   }

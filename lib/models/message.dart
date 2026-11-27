@@ -36,7 +36,8 @@ class Message {
       senderId: map['senderId'] as String? ?? '',
       text: map['text'] as String? ?? '',
       photo: map['photo'] as String? ?? '',
-      sentAt: DateTime.tryParse(map['sentAt'] as String? ?? '') ?? DateTime.now(),
+      sentAt:
+          DateTime.tryParse(map['sentAt'] as String? ?? '') ?? DateTime.now(),
     );
   }
 }

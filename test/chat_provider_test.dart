@@ -8,8 +8,18 @@ import 'package:souq/screens/chat_screen.dart';
 
 import 'fake_chat_repository.dart';
 
-const buyer = User(id: 'u_buyer', name: 'Sara', email: 'sara@kfupm.edu.sa', studentId: '202300001');
-const seller = User(id: 'u_seller', name: 'Omar', email: 'omar@kfupm.edu.sa', studentId: '202300002');
+const buyer = User(
+  id: 'u_buyer',
+  name: 'Sara',
+  email: 'sara@kfupm.edu.sa',
+  studentId: '202300001',
+);
+const seller = User(
+  id: 'u_seller',
+  name: 'Omar',
+  email: 'omar@kfupm.edu.sa',
+  studentId: '202300002',
+);
 
 final listing = Listing(
   id: 'l1',
@@ -74,7 +84,10 @@ void main() {
       await settle();
       final chat = await provider.openChatForListing(listing);
 
-      expect(await provider.sendMessage(chatId: chat!.id, text: '   '), isFalse);
+      expect(
+        await provider.sendMessage(chatId: chat!.id, text: '   '),
+        isFalse,
+      );
       expect(repo.messages[chat.id], isNull);
     });
 
@@ -83,37 +96,50 @@ void main() {
       await settle();
       final chat = await provider.openChatForListing(listing);
 
-      expect(await provider.sendMessage(chatId: chat!.id, text: '', photo: 'aGVsbG8='), isTrue);
+      expect(
+        await provider.sendMessage(
+          chatId: chat!.id,
+          text: '',
+          photo: 'aGVsbG8=',
+        ),
+        isTrue,
+      );
       await settle();
       expect(provider.chats.first.lastMessage, 'Photo');
     });
 
-    test('sent message shows live in the chat and is unread for the seller', () async {
-      provider.setUser(buyer);
-      await settle();
-      final chat = await provider.openChatForListing(listing);
-      provider.enterChat(chat!.id);
-      await settle();
+    test(
+      'sent message shows live in the chat and is unread for the seller',
+      () async {
+        provider.setUser(buyer);
+        await settle();
+        final chat = await provider.openChatForListing(listing);
+        provider.enterChat(chat!.id);
+        await settle();
 
-      final ok = await provider.sendMessage(chatId: chat.id, text: ' Is it available? ');
-      await settle();
+        final ok = await provider.sendMessage(
+          chatId: chat.id,
+          text: ' Is it available? ',
+        );
+        await settle();
 
-      expect(ok, isTrue);
-      expect(provider.activeMessages.first.text, 'Is it available?');
-      expect(provider.chats.first.lastMessage, 'Is it available?');
+        expect(ok, isTrue);
+        expect(provider.activeMessages.first.text, 'Is it available?');
+        expect(provider.chats.first.lastMessage, 'Is it available?');
 
-      // The seller logs in: the chat is there with 1 unread message.
-      provider.setUser(seller);
-      await settle();
-      expect(provider.chats.length, 1);
-      expect(provider.unreadTotal, 1);
-      expect(provider.chats.first.peerName(seller.id), 'Sara');
+        // The seller logs in: the chat is there with 1 unread message.
+        provider.setUser(seller);
+        await settle();
+        expect(provider.chats.length, 1);
+        expect(provider.unreadTotal, 1);
+        expect(provider.chats.first.peerName(seller.id), 'Sara');
 
-      // Opening the chat marks it as read.
-      provider.enterChat(chat.id);
-      await settle();
-      expect(provider.unreadTotal, 0);
-    });
+        // Opening the chat marks it as read.
+        provider.enterChat(chat.id);
+        await settle();
+        expect(provider.unreadTotal, 0);
+      },
+    );
 
     test('load error is shown and send failure returns false', () async {
       provider.setUser(buyer);
@@ -139,7 +165,9 @@ void main() {
   });
 
   group('ChatScreen', () {
-    testWidgets('shows a message after Send and rejects an empty one', (tester) async {
+    testWidgets('shows a message after Send and rejects an empty one', (
+      tester,
+    ) async {
       final repo = FakeChatRepository();
       final provider = ChatProvider(repo)..setUser(buyer);
       final chat = await provider.openChatForListing(listing);

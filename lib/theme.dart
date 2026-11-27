@@ -48,12 +48,28 @@ final ThemeData souqTheme = ThemeData(
   ),
 
   textTheme: const TextTheme(
-    headlineSmall: TextStyle(fontSize: 26, fontWeight: FontWeight.bold, color: SouqColors.text),
-    titleLarge: TextStyle(fontSize: 20, fontWeight: FontWeight.bold, color: SouqColors.text),
-    titleMedium: TextStyle(fontSize: 16, fontWeight: FontWeight.w600, color: SouqColors.text),
+    headlineSmall: TextStyle(
+      fontSize: 26,
+      fontWeight: FontWeight.bold,
+      color: SouqColors.text,
+    ),
+    titleLarge: TextStyle(
+      fontSize: 20,
+      fontWeight: FontWeight.bold,
+      color: SouqColors.text,
+    ),
+    titleMedium: TextStyle(
+      fontSize: 16,
+      fontWeight: FontWeight.w600,
+      color: SouqColors.text,
+    ),
     bodyLarge: TextStyle(fontSize: 15, color: SouqColors.text),
     bodyMedium: TextStyle(fontSize: 14, color: SouqColors.subText),
-    labelMedium: TextStyle(fontSize: 13, fontWeight: FontWeight.w500, color: SouqColors.text),
+    labelMedium: TextStyle(
+      fontSize: 13,
+      fontWeight: FontWeight.w500,
+      color: SouqColors.text,
+    ),
   ),
 
   inputDecorationTheme: InputDecorationTheme(
@@ -75,7 +91,9 @@ final ThemeData souqTheme = ThemeData(
       foregroundColor: Colors.white,
       minimumSize: const Size.fromHeight(52),
       textStyle: const TextStyle(fontSize: 16, fontWeight: FontWeight.w600),
-      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(kSouqRadius)),
+      shape: RoundedRectangleBorder(
+        borderRadius: BorderRadius.circular(kSouqRadius),
+      ),
     ),
   ),
 
@@ -85,14 +103,19 @@ final ThemeData souqTheme = ThemeData(
       minimumSize: const Size.fromHeight(52),
       side: const BorderSide(color: SouqColors.teal, width: 1.5),
       textStyle: const TextStyle(fontSize: 16, fontWeight: FontWeight.w600),
-      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(kSouqRadius)),
+      shape: RoundedRectangleBorder(
+        borderRadius: BorderRadius.circular(kSouqRadius),
+      ),
     ),
   ),
 
   textButtonTheme: TextButtonThemeData(
     style: TextButton.styleFrom(
       foregroundColor: SouqColors.green,
-      textStyle: const TextStyle(fontWeight: FontWeight.w600, decoration: TextDecoration.underline),
+      textStyle: const TextStyle(
+        fontWeight: FontWeight.w600,
+        decoration: TextDecoration.underline,
+      ),
     ),
   ),
 
@@ -101,8 +124,14 @@ final ThemeData souqTheme = ThemeData(
     selectedColor: SouqColors.teal,
     side: const BorderSide(color: SouqColors.border),
     shape: const StadiumBorder(),
-    labelStyle: const TextStyle(color: SouqColors.text, fontWeight: FontWeight.w500),
-    secondaryLabelStyle: const TextStyle(color: Colors.white, fontWeight: FontWeight.w600),
+    labelStyle: const TextStyle(
+      color: SouqColors.text,
+      fontWeight: FontWeight.w500,
+    ),
+    secondaryLabelStyle: const TextStyle(
+      color: Colors.white,
+      fontWeight: FontWeight.w600,
+    ),
     checkmarkColor: Colors.white,
   ),
 
@@ -117,7 +146,9 @@ final ThemeData souqTheme = ThemeData(
   navigationBarTheme: const NavigationBarThemeData(
     backgroundColor: Colors.white,
     indicatorColor: Color(0xFFE2EBED),
-    labelTextStyle: WidgetStatePropertyAll(TextStyle(fontSize: 12, fontWeight: FontWeight.w500)),
+    labelTextStyle: WidgetStatePropertyAll(
+      TextStyle(fontSize: 12, fontWeight: FontWeight.w500),
+    ),
   ),
 
   snackBarTheme: const SnackBarThemeData(

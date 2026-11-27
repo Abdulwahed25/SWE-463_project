@@ -48,7 +48,11 @@ class _PostListingScreenState extends State<PostListingScreen> {
       messenger.showSnackBar(SnackBar(content: Text(e.toString())));
     } catch (e) {
       messenger.showSnackBar(
-        const SnackBar(content: Text("Couldn't open your photos. Check the app's photo permission.")),
+        const SnackBar(
+          content: Text(
+            "Couldn't open your photos. Check the app's photo permission.",
+          ),
+        ),
       );
     }
   }
@@ -63,21 +67,27 @@ class _PostListingScreenState extends State<PostListingScreen> {
     setState(() => _isPosting = true);
     try {
       final listing = await context.read<ListingsProvider>().addListing(
-            title: _titleController.text,
-            price: double.parse(_priceController.text.trim()),
-            category: _category!,
-            condition: _condition!,
-            location: _locationController.text,
-            description: _descriptionController.text,
-            photo: _photo,
-          );
+        title: _titleController.text,
+        price: double.parse(_priceController.text.trim()),
+        category: _category!,
+        condition: _condition!,
+        location: _locationController.text,
+        description: _descriptionController.text,
+        photo: _photo,
+      );
       if (!mounted) return;
-      Navigator.pushReplacementNamed(context, AppRoutes.posted, arguments: listing.id);
+      Navigator.pushReplacementNamed(
+        context,
+        AppRoutes.posted,
+        arguments: listing.id,
+      );
     } catch (e) {
       if (!mounted) return;
       setState(() => _isPosting = false);
       ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(content: Text("Couldn't post your listing. Please try again.")),
+        const SnackBar(
+          content: Text("Couldn't post your listing. Please try again."),
+        ),
       );
     }
   }
@@ -110,7 +120,11 @@ class _PostListingScreenState extends State<PostListingScreen> {
                       ? const Column(
                           mainAxisAlignment: MainAxisAlignment.center,
                           children: [
-                            Icon(Icons.add_a_photo_outlined, color: SouqColors.teal, size: 32),
+                            Icon(
+                              Icons.add_a_photo_outlined,
+                              color: SouqColors.teal,
+                              size: 32,
+                            ),
                             SizedBox(height: 6),
                             Text('Add a photo (optional)'),
                           ],
@@ -136,21 +150,31 @@ class _PostListingScreenState extends State<PostListingScreen> {
               TextFormField(
                 controller: _titleController,
                 textInputAction: TextInputAction.next,
-                decoration: const InputDecoration(labelText: 'Title', hintText: 'e.g. Calculus textbook'),
+                decoration: const InputDecoration(
+                  labelText: 'Title',
+                  hintText: 'e.g. Calculus textbook',
+                ),
                 validator: (value) {
                   final text = value?.trim() ?? '';
                   if (text.isEmpty) return 'Title is required';
-                  if (text.length < 3) return 'Title must be at least 3 characters';
-                  if (text.length > 60) return 'Title must be 60 characters or less';
+                  if (text.length < 3)
+                    return 'Title must be at least 3 characters';
+                  if (text.length > 60)
+                    return 'Title must be 60 characters or less';
                   return null;
                 },
               ),
               const SizedBox(height: 16),
               TextFormField(
                 controller: _priceController,
-                keyboardType: const TextInputType.numberWithOptions(decimal: true),
+                keyboardType: const TextInputType.numberWithOptions(
+                  decimal: true,
+                ),
                 textInputAction: TextInputAction.next,
-                decoration: const InputDecoration(labelText: 'Price (SAR)', hintText: 'e.g. 50'),
+                decoration: const InputDecoration(
+                  labelText: 'Price (SAR)',
+                  hintText: 'e.g. 50',
+                ),
                 validator: (value) {
                   final text = value?.trim() ?? '';
                   if (text.isEmpty) return 'Price is required';
@@ -165,7 +189,10 @@ class _PostListingScreenState extends State<PostListingScreen> {
               DropdownButtonFormField<String>(
                 initialValue: _category,
                 decoration: const InputDecoration(labelText: 'Category'),
-                items: [for (final c in kCategories) DropdownMenuItem(value: c, child: Text(c))],
+                items: [
+                  for (final c in kCategories)
+                    DropdownMenuItem(value: c, child: Text(c)),
+                ],
                 onChanged: (v) => setState(() => _category = v),
                 validator: (v) => v == null ? 'Choose a category' : null,
               ),
@@ -173,7 +200,10 @@ class _PostListingScreenState extends State<PostListingScreen> {
               DropdownButtonFormField<String>(
                 initialValue: _condition,
                 decoration: const InputDecoration(labelText: 'Condition'),
-                items: [for (final c in kConditions) DropdownMenuItem(value: c, child: Text(c))],
+                items: [
+                  for (final c in kConditions)
+                    DropdownMenuItem(value: c, child: Text(c)),
+                ],
                 onChanged: (v) => setState(() => _condition = v),
                 validator: (v) => v == null ? 'Choose the condition' : null,
               ),
@@ -181,16 +211,23 @@ class _PostListingScreenState extends State<PostListingScreen> {
               TextFormField(
                 controller: _locationController,
                 textInputAction: TextInputAction.next,
-                decoration: const InputDecoration(labelText: 'Pickup location', hintText: 'e.g. Building 57'),
-                validator: (value) =>
-                    (value?.trim() ?? '').isEmpty ? 'Pickup location is required' : null,
+                decoration: const InputDecoration(
+                  labelText: 'Pickup location',
+                  hintText: 'e.g. Building 57',
+                ),
+                validator: (value) => (value?.trim() ?? '').isEmpty
+                    ? 'Pickup location is required'
+                    : null,
               ),
               const SizedBox(height: 16),
               TextFormField(
                 controller: _descriptionController,
                 maxLines: 4,
                 maxLength: 500,
-                decoration: const InputDecoration(labelText: 'Description', alignLabelWithHint: true),
+                decoration: const InputDecoration(
+                  labelText: 'Description',
+                  alignLabelWithHint: true,
+                ),
                 validator: (value) {
                   final text = value?.trim() ?? '';
                   if (text.isEmpty) return 'Description is required';
@@ -208,7 +245,10 @@ class _PostListingScreenState extends State<PostListingScreen> {
                           SizedBox(
                             width: 20,
                             height: 20,
-                            child: CircularProgressIndicator(strokeWidth: 2, color: Colors.white),
+                            child: CircularProgressIndicator(
+                              strokeWidth: 2,
+                              color: Colors.white,
+                            ),
                           ),
                           SizedBox(width: 12),
                           Text('Posting...'),

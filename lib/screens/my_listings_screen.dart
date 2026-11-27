@@ -65,11 +65,15 @@ class _MyListingsScreenState extends State<MyListingsScreen> {
           final l = mine[i];
           return ListingCard(
             title: l.title,
-      photo: l.photo,
+            photo: l.photo,
             price: l.price,
             location: '${l.location} · ${timeAgo(l.createdAt)}',
             isSold: l.isSold,
-            onTap: () => Navigator.pushNamed(context, AppRoutes.listingDetail, arguments: l.id),
+            onTap: () => Navigator.pushNamed(
+              context,
+              AppRoutes.listingDetail,
+              arguments: l.id,
+            ),
           );
         },
       );
@@ -84,7 +88,10 @@ class _MyListingsScreenState extends State<MyListingsScreen> {
             child: SegmentedButton<_StatusTab>(
               segments: const [
                 ButtonSegment(value: _StatusTab.all, label: Text('All')),
-                ButtonSegment(value: _StatusTab.available, label: Text('Available')),
+                ButtonSegment(
+                  value: _StatusTab.available,
+                  label: Text('Available'),
+                ),
                 ButtonSegment(value: _StatusTab.sold, label: Text('Sold')),
               ],
               selected: {_tab},

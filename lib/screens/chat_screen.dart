@@ -62,7 +62,11 @@ class _ChatScreenState extends State<ChatScreen> {
       return;
     } catch (e) {
       messenger.showSnackBar(
-        const SnackBar(content: Text("Couldn't open your photos. Check the app's photo permission.")),
+        const SnackBar(
+          content: Text(
+            "Couldn't open your photos. Check the app's photo permission.",
+          ),
+        ),
       );
       return;
     }
@@ -79,7 +83,9 @@ class _ChatScreenState extends State<ChatScreen> {
     } else {
       messenger
         ..hideCurrentSnackBar()
-        ..showSnackBar(const SnackBar(content: Text('Photo not sent. Please try again.')));
+        ..showSnackBar(
+          const SnackBar(content: Text('Photo not sent. Please try again.')),
+        );
     }
   }
 
@@ -94,14 +100,19 @@ class _ChatScreenState extends State<ChatScreen> {
       return;
     }
 
-    final ok = await _chatProvider.sendMessage(chatId: widget.chatId, text: text);
+    final ok = await _chatProvider.sendMessage(
+      chatId: widget.chatId,
+      text: text,
+    );
     if (!mounted) return;
     if (ok) {
       _textController.clear();
     } else {
       messenger
         ..hideCurrentSnackBar()
-        ..showSnackBar(const SnackBar(content: Text('Message not sent. Please try again.')));
+        ..showSnackBar(
+          const SnackBar(content: Text('Message not sent. Please try again.')),
+        );
     }
   }
 
@@ -111,7 +122,12 @@ class _ChatScreenState extends State<ChatScreen> {
     final chat = context.watch<ChatProvider>();
 
     final initials = widget.peerName.trim().isNotEmpty
-        ? widget.peerName.trim().split(' ').take(2).map((e) => e[0].toUpperCase()).join()
+        ? widget.peerName
+              .trim()
+              .split(' ')
+              .take(2)
+              .map((e) => e[0].toUpperCase())
+              .join()
         : '?';
 
     return Scaffold(
@@ -123,9 +139,8 @@ class _ChatScreenState extends State<ChatScreen> {
             Navigator.push(
               context,
               MaterialPageRoute(
-                builder: (context) => SellerProfileScreen(
-                  sellerName: widget.peerName,
-                ),
+                builder: (context) =>
+                    SellerProfileScreen(sellerName: widget.peerName),
               ),
             );
           },
@@ -139,7 +154,10 @@ class _ChatScreenState extends State<ChatScreen> {
                   foregroundColor: theme.colorScheme.onPrimaryContainer,
                   child: Text(
                     initials,
-                    style: const TextStyle(fontSize: 12, fontWeight: FontWeight.bold),
+                    style: const TextStyle(
+                      fontSize: 12,
+                      fontWeight: FontWeight.bold,
+                    ),
                   ),
                 ),
                 const SizedBox(width: 10),
@@ -150,7 +168,10 @@ class _ChatScreenState extends State<ChatScreen> {
                     children: [
                       Text(
                         widget.peerName,
-                        style: const TextStyle(fontSize: 15, fontWeight: FontWeight.w600),
+                        style: const TextStyle(
+                          fontSize: 15,
+                          fontWeight: FontWeight.w600,
+                        ),
                         overflow: TextOverflow.ellipsis,
                       ),
                       Text(

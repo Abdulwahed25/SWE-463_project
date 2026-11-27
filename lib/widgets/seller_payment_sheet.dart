@@ -39,7 +39,9 @@ class _SellerPaymentSheetState extends State<SellerPaymentSheet> {
 
   void _load() {
     // Store the Future so it isn't restarted on every rebuild.
-    _sellerFuture = context.read<AuthProvider>().fetchUser(widget.listing.sellerId);
+    _sellerFuture = context.read<AuthProvider>().fetchUser(
+      widget.listing.sellerId,
+    );
   }
 
   @override
@@ -52,7 +54,11 @@ class _SellerPaymentSheetState extends State<SellerPaymentSheet> {
           future: _sellerFuture,
           builder: (context, snapshot) {
             if (snapshot.connectionState != ConnectionState.done) {
-              return const _SheetMessage(icon: null, title: 'Loading payment details...', message: '');
+              return const _SheetMessage(
+                icon: null,
+                title: 'Loading payment details...',
+                message: '',
+              );
             }
             if (snapshot.hasError) {
               return _SheetMessage(
@@ -94,7 +100,11 @@ class _IbanDetails extends StatelessWidget {
       children: [
         const Text(
           'Pay by bank transfer',
-          style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold, color: SouqColors.text),
+          style: TextStyle(
+            fontSize: 18,
+            fontWeight: FontWeight.bold,
+            color: SouqColors.text,
+          ),
         ),
         const SizedBox(height: 16),
         Container(
@@ -107,13 +117,29 @@ class _IbanDetails extends StatelessWidget {
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              const Text('Account name', style: TextStyle(fontSize: 12, color: SouqColors.subText)),
-              Text(seller.name, style: const TextStyle(fontSize: 15, fontWeight: FontWeight.w600)),
+              const Text(
+                'Account name',
+                style: TextStyle(fontSize: 12, color: SouqColors.subText),
+              ),
+              Text(
+                seller.name,
+                style: const TextStyle(
+                  fontSize: 15,
+                  fontWeight: FontWeight.w600,
+                ),
+              ),
               const SizedBox(height: 12),
-              const Text('IBAN', style: TextStyle(fontSize: 12, color: SouqColors.subText)),
+              const Text(
+                'IBAN',
+                style: TextStyle(fontSize: 12, color: SouqColors.subText),
+              ),
               SelectableText(
                 formatIban(seller.iban),
-                style: const TextStyle(fontSize: 16, fontWeight: FontWeight.w600, letterSpacing: 0.5),
+                style: const TextStyle(
+                  fontSize: 16,
+                  fontWeight: FontWeight.w600,
+                  letterSpacing: 0.5,
+                ),
               ),
             ],
           ),
@@ -161,14 +187,22 @@ class _SheetMessage extends StatelessWidget {
       children: [
         const SizedBox(height: 8),
         if (icon == null)
-          const SizedBox(width: 36, height: 36, child: CircularProgressIndicator())
+          const SizedBox(
+            width: 36,
+            height: 36,
+            child: CircularProgressIndicator(),
+          )
         else
           Icon(icon, size: 40, color: SouqColors.teal),
         const SizedBox(height: 14),
         Text(
           title,
           textAlign: TextAlign.center,
-          style: const TextStyle(fontSize: 17, fontWeight: FontWeight.bold, color: SouqColors.text),
+          style: const TextStyle(
+            fontSize: 17,
+            fontWeight: FontWeight.bold,
+            color: SouqColors.text,
+          ),
         ),
         if (message.isNotEmpty) ...[
           const SizedBox(height: 6),

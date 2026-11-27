@@ -64,11 +64,20 @@ class _SaPrefix extends StatelessWidget {
       child: Row(
         mainAxisSize: MainAxisSize.min,
         children: [
-          const Icon(Icons.account_balance_outlined, size: 20, color: SouqColors.subText),
+          const Icon(
+            Icons.account_balance_outlined,
+            size: 20,
+            color: SouqColors.subText,
+          ),
           const SizedBox(width: 8),
           const Text(
             'SA',
-            style: TextStyle(fontSize: 16, fontWeight: FontWeight.w600, color: SouqColors.text, letterSpacing: 0.5),
+            style: TextStyle(
+              fontSize: 16,
+              fontWeight: FontWeight.w600,
+              color: SouqColors.text,
+              letterSpacing: 0.5,
+            ),
           ),
           const SizedBox(width: 8),
           Container(width: 1, height: 24, color: SouqColors.border),

@@ -20,11 +20,13 @@ Future<void> main() async {
   WidgetsFlutterBinding.ensureInitialized();
   await Firebase.initializeApp(options: DefaultFirebaseOptions.currentPlatform);
 
-  runApp(SouqApp(
-    repository: FirestoreListingRepository(),
-    authRepository: FirebaseAuthRepository(),
-    chatRepository: FirestoreChatRepository(),
-  ));
+  runApp(
+    SouqApp(
+      repository: FirestoreListingRepository(),
+      authRepository: FirebaseAuthRepository(),
+      chatRepository: FirestoreChatRepository(),
+    ),
+  );
 }
 
 class SouqApp extends StatelessWidget {

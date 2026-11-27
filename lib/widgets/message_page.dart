@@ -43,14 +43,24 @@ class MessagePage extends StatelessWidget {
             const SizedBox(height: 16),
             Text(title, style: Theme.of(context).textTheme.titleLarge),
             const SizedBox(height: 8),
-            Text(message, textAlign: TextAlign.center, style: Theme.of(context).textTheme.bodyMedium),
+            Text(
+              message,
+              textAlign: TextAlign.center,
+              style: Theme.of(context).textTheme.bodyMedium,
+            ),
             const SizedBox(height: 24),
             for (final action in actions) ...[
               SizedBox(
                 width: double.infinity,
                 child: action.primary
-                    ? FilledButton(onPressed: action.onPressed, child: Text(action.label))
-                    : OutlinedButton(onPressed: action.onPressed, child: Text(action.label)),
+                    ? FilledButton(
+                        onPressed: action.onPressed,
+                        child: Text(action.label),
+                      )
+                    : OutlinedButton(
+                        onPressed: action.onPressed,
+                        child: Text(action.label),
+                      ),
               ),
               const SizedBox(height: 12),
             ],

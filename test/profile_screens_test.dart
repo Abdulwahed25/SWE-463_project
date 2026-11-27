@@ -39,14 +39,19 @@ Future<(FakeAuthRepository, AuthProvider)> _pumpApp(
     MultiProvider(
       providers: [
         ChangeNotifierProvider.value(value: auth),
-        ChangeNotifierProvider.value(value: listings ?? ListingsProvider(FakeListingRepository())),
+        ChangeNotifierProvider.value(
+          value: listings ?? ListingsProvider(FakeListingRepository()),
+        ),
       ],
       child: MaterialApp(
         home: Builder(
           builder: (context) => Scaffold(
             body: Center(
               child: TextButton(
-                onPressed: () => Navigator.push(context, MaterialPageRoute(builder: (_) => home)),
+                onPressed: () => Navigator.push(
+                  context,
+                  MaterialPageRoute(builder: (_) => home),
+                ),
                 child: const Text('open'),
               ),
             ),
@@ -60,8 +65,14 @@ Future<(FakeAuthRepository, AuthProvider)> _pumpApp(
   return (repo, auth);
 }
 
-final _phoneInput = find.descendant(of: find.byType(PhoneField), matching: find.byType(EditableText));
-final _ibanInput = find.descendant(of: find.byType(IbanField), matching: find.byType(EditableText));
+final _phoneInput = find.descendant(
+  of: find.byType(PhoneField),
+  matching: find.byType(EditableText),
+);
+final _ibanInput = find.descendant(
+  of: find.byType(IbanField),
+  matching: find.byType(EditableText),
+);
 
 /// Scrolls the Save button into view (the test screen is short) and taps it.
 Future<void> _tapSave(WidgetTester tester) async {
@@ -78,7 +89,14 @@ void main() {
         FakeListingRepository(
           initial: [
             testListing('1', 'Calculus book', 50, 'Books', sellerId: _ayman.id),
-            testListing('2', 'Desk lamp', 30, 'Furniture', sellerId: _ayman.id, sold: true),
+            testListing(
+              '2',
+              'Desk lamp',
+              30,
+              'Furniture',
+              sellerId: _ayman.id,
+              sold: true,
+            ),
             testListing('3', 'Someone else', 10, 'Books'),
           ],
         ),
@@ -90,7 +108,10 @@ void main() {
       expect(find.text('Ayman Musalli'), findsOneWidget);
       expect(find.text('AM'), findsOneWidget); // initials avatar
       expect(find.text('202270440'), findsOneWidget);
-      expect(find.text('+966 50-123-4567'), findsOneWidget); // saved as 0501234567, shown formatted
+      expect(
+        find.text('+966 50-123-4567'),
+        findsOneWidget,
+      ); // saved as 0501234567, shown formatted
 
       // Posted 2, Sold 1, Saved 0
       expect(find.text('2'), findsOneWidget);
@@ -101,7 +122,9 @@ void main() {
       expect(find.text('Add your IBAN'), findsOneWidget);
     });
 
-    testWidgets('shows the IBAN in groups of 4 after it is saved', (tester) async {
+    testWidgets('shows the IBAN in groups of 4 after it is saved', (
+      tester,
+    ) async {
       final (_, auth) = await _pumpApp(tester, const ProfileScreen());
 
       await auth.updateProfile(_ayman.copyWith(iban: _validIban));
@@ -116,10 +139,15 @@ void main() {
     testWidgets('Save is disabled until something changes', (tester) async {
       await _pumpApp(tester, const EditProfileScreen());
 
-      FilledButton saveButton() => tester.widget<FilledButton>(find.widgetWithText(FilledButton, 'Save changes'));
+      FilledButton saveButton() => tester.widget<FilledButton>(
+        find.widgetWithText(FilledButton, 'Save changes'),
+      );
       expect(saveButton().onPressed, isNull);
 
-      await tester.enterText(find.widgetWithText(TextFormField, 'Ayman Musalli'), 'Ayman M');
+      await tester.enterText(
+        find.widgetWithText(TextFormField, 'Ayman Musalli'),
+        'Ayman M',
+      );
       await tester.pump();
       expect(saveButton().onPressed, isNotNull);
     });
@@ -127,57 +155,79 @@ void main() {
     testWidgets('invalid input shows errors and is not saved', (tester) async {
       final (repo, _) = await _pumpApp(tester, const EditProfileScreen());
 
-      await tester.enterText(find.widgetWithText(TextFormField, 'Ayman Musalli'), '');
+      await tester.enterText(
+        find.widgetWithText(TextFormField, 'Ayman Musalli'),
+        '',
+      );
       await tester.enterText(_phoneInput, '534');
       await tester.enterText(_ibanInput, '12');
       await _tapSave(tester);
 
       expect(find.text('Name cannot be empty.'), findsOneWidget);
       expect(find.text('Enter 9 digits (you entered 3).'), findsOneWidget);
-      expect(find.text('Enter the 22 digits after SA (you entered 2).'), findsOneWidget);
+      expect(
+        find.text('Enter the 22 digits after SA (you entered 2).'),
+        findsOneWidget,
+      );
       expect(repo.currentUser?.name, 'Ayman Musalli'); // nothing saved
     });
 
     testWidgets('valid input is saved and the screen closes', (tester) async {
       final (repo, auth) = await _pumpApp(tester, const EditProfileScreen());
 
-      await tester.enterText(find.widgetWithText(TextFormField, 'Ayman Musalli'), 'Ayman M');
+      await tester.enterText(
+        find.widgetWithText(TextFormField, 'Ayman Musalli'),
+        'Ayman M',
+      );
       await tester.enterText(_ibanInput, 'sa03 8000 0000 6080 1016 7519');
       await _tapSave(tester);
 
       expect(find.text('Profile updated successfully!'), findsOneWidget);
       expect(find.byType(EditProfileScreen), findsNothing); // popped back
       expect(auth.user?.name, 'Ayman M');
-      expect(repo.currentUser?.iban, _validIban); // saved without spaces, uppercase
+      expect(
+        repo.currentUser?.iban,
+        _validIban,
+      ); // saved without spaces, uppercase
     });
 
-    testWidgets('a failed save shows an error and stays on the screen', (tester) async {
+    testWidgets('a failed save shows an error and stays on the screen', (
+      tester,
+    ) async {
       final (repo, _) = await _pumpApp(tester, const EditProfileScreen());
       repo.shouldFail = true;
 
-      await tester.enterText(find.widgetWithText(TextFormField, 'Ayman Musalli'), 'Ayman M');
+      await tester.enterText(
+        find.widgetWithText(TextFormField, 'Ayman Musalli'),
+        'Ayman M',
+      );
       await _tapSave(tester);
 
       expect(find.text('No connection'), findsOneWidget);
       expect(find.byType(EditProfileScreen), findsOneWidget);
     });
 
-    testWidgets('phone and IBAN are formatted while typing and letters are ignored', (tester) async {
-      await _pumpApp(tester, const EditProfileScreen());
+    testWidgets(
+      'phone and IBAN are formatted while typing and letters are ignored',
+      (tester) async {
+        await _pumpApp(tester, const EditProfileScreen());
 
-      // Existing phone "0501234567" is shown without the 0, next to +966
-      expect(find.text('50-123-4567'), findsOneWidget);
-      expect(find.text('+966'), findsOneWidget);
+        // Existing phone "0501234567" is shown without the 0, next to +966
+        expect(find.text('50-123-4567'), findsOneWidget);
+        expect(find.text('+966'), findsOneWidget);
 
-      await tester.enterText(_phoneInput, '0530344226abc');
-      await tester.enterText(_ibanInput, 'SA0380000000608010167519');
-      await tester.pump();
+        await tester.enterText(_phoneInput, '0530344226abc');
+        await tester.enterText(_ibanInput, 'SA0380000000608010167519');
+        await tester.pump();
 
-      expect(find.text('53-034-4226'), findsOneWidget);
-      expect(find.text('03 8000 0000 6080 1016 7519'), findsOneWidget);
-    });
+        expect(find.text('53-034-4226'), findsOneWidget);
+        expect(find.text('03 8000 0000 6080 1016 7519'), findsOneWidget);
+      },
+    );
 
-    testWidgets('picking another country code saves it with the number', (tester) async {
+    testWidgets('picking another country code saves it with the number', (
+      tester,
+    ) async {
       final (repo, _) = await _pumpApp(tester, const EditProfileScreen());
 
       await tester.tap(find.text('+966'));
@@ -192,10 +242,15 @@ void main() {
       expect(repo.currentUser?.phone, '+96598765432');
     });
 
-    testWidgets('going back with unsaved changes asks to discard', (tester) async {
+    testWidgets('going back with unsaved changes asks to discard', (
+      tester,
+    ) async {
       await _pumpApp(tester, const EditProfileScreen());
 
-      await tester.enterText(find.widgetWithText(TextFormField, 'Ayman Musalli'), 'Ayman M');
+      await tester.enterText(
+        find.widgetWithText(TextFormField, 'Ayman Musalli'),
+        'Ayman M',
+      );
       await tester.pump();
       await tester.pageBack();
       await tester.pumpAndSettle();
@@ -234,7 +289,9 @@ void main() {
       expect(find.text('SA03 8000 0000 6080 1016 7519'), findsOneWidget);
     });
 
-    testWidgets('shows an empty state when the seller has no IBAN', (tester) async {
+    testWidgets('shows an empty state when the seller has no IBAN', (
+      tester,
+    ) async {
       await _pumpApp(tester, const Scaffold());
 
       showSellerPaymentSheet(

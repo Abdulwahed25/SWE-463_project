@@ -6,11 +6,7 @@ import 'photo_view.dart';
 /// One message in the chat: my messages on the right in teal,
 /// the other person's on the left in grey. A message can have a photo.
 class ChatBubble extends StatelessWidget {
-  const ChatBubble({
-    super.key,
-    required this.message,
-    required this.isMe,
-  });
+  const ChatBubble({super.key, required this.message, required this.isMe});
 
   final Message message;
   final bool isMe;
@@ -34,7 +30,9 @@ class ChatBubble extends StatelessWidget {
           maxWidth: MediaQuery.of(context).size.width * 0.75,
         ),
         decoration: BoxDecoration(
-          color: isMe ? theme.colorScheme.primary : theme.colorScheme.surfaceContainerHighest,
+          color: isMe
+              ? theme.colorScheme.primary
+              : theme.colorScheme.surfaceContainerHighest,
           borderRadius: BorderRadius.only(
             topLeft: const Radius.circular(16),
             topRight: const Radius.circular(16),
@@ -43,7 +41,9 @@ class ChatBubble extends StatelessWidget {
           ),
         ),
         child: Column(
-          crossAxisAlignment: isMe ? CrossAxisAlignment.end : CrossAxisAlignment.start,
+          crossAxisAlignment: isMe
+              ? CrossAxisAlignment.end
+              : CrossAxisAlignment.start,
           children: [
             if (message.hasPhoto) ...[
               ClipRRect(
@@ -56,7 +56,9 @@ class ChatBubble extends StatelessWidget {
               Text(
                 message.text,
                 style: TextStyle(
-                  color: isMe ? theme.colorScheme.onPrimary : theme.colorScheme.onSurfaceVariant,
+                  color: isMe
+                      ? theme.colorScheme.onPrimary
+                      : theme.colorScheme.onSurfaceVariant,
                   fontSize: 15,
                 ),
               ),
@@ -69,7 +71,9 @@ class ChatBubble extends StatelessWidget {
                   fontSize: 10,
                   color: isMe
                       ? theme.colorScheme.onPrimary.withValues(alpha: 0.7)
-                      : theme.colorScheme.onSurfaceVariant.withValues(alpha: 0.7),
+                      : theme.colorScheme.onSurfaceVariant.withValues(
+                          alpha: 0.7,
+                        ),
                 ),
               ),
             ),

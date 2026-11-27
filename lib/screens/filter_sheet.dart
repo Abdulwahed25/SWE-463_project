@@ -39,11 +39,13 @@ class _FilterSheetState extends State<FilterSheet> {
   void _apply() {
     if (!_formKey.currentState!.validate()) return;
     final text = _maxPriceController.text.trim();
-    context.read<ListingsProvider>().setFilter(ListingFilter(
-          category: _category,
-          maxPrice: text.isEmpty ? null : double.parse(text),
-          availableOnly: _availableOnly,
-        ));
+    context.read<ListingsProvider>().setFilter(
+      ListingFilter(
+        category: _category,
+        maxPrice: text.isEmpty ? null : double.parse(text),
+        availableOnly: _availableOnly,
+      ),
+    );
     Navigator.pop(context);
   }
 
@@ -58,7 +60,12 @@ class _FilterSheetState extends State<FilterSheet> {
   @override
   Widget build(BuildContext context) {
     return Padding(
-      padding: EdgeInsets.fromLTRB(24, 24, 24, 24 + MediaQuery.of(context).viewInsets.bottom),
+      padding: EdgeInsets.fromLTRB(
+        24,
+        24,
+        24,
+        24 + MediaQuery.of(context).viewInsets.bottom,
+      ),
       child: Form(
         key: _formKey,
         child: Column(
@@ -96,12 +103,16 @@ class _FilterSheetState extends State<FilterSheet> {
             TextFormField(
               controller: _maxPriceController,
               keyboardType: TextInputType.number,
-              decoration: const InputDecoration(labelText: 'Max price (SAR)', hintText: 'No limit'),
+              decoration: const InputDecoration(
+                labelText: 'Max price (SAR)',
+                hintText: 'No limit',
+              ),
               validator: (value) {
                 final text = value?.trim() ?? '';
                 if (text.isEmpty) return null;
                 final number = double.tryParse(text);
-                if (number == null || number <= 0) return 'Enter a number above 0';
+                if (number == null || number <= 0)
+                  return 'Enter a number above 0';
                 return null;
               },
             ),
@@ -115,7 +126,10 @@ class _FilterSheetState extends State<FilterSheet> {
             const SizedBox(height: 12),
             SizedBox(
               width: double.infinity,
-              child: FilledButton(onPressed: _apply, child: const Text('Show results')),
+              child: FilledButton(
+                onPressed: _apply,
+                child: const Text('Show results'),
+              ),
             ),
           ],
         ),

@@ -88,18 +88,20 @@ class ChatProvider extends ChangeNotifier {
     _errorMessage = null;
     notifyListeners();
 
-    _chatsSub = _repository.watchChats(id).listen(
-      (chats) {
-        _chats = chats;
-        _isLoading = false;
-        notifyListeners();
-      },
-      onError: (Object e) {
-        _errorMessage = 'Could not load your chats. Check your connection and try again.';
-        _isLoading = false;
-        notifyListeners();
-      },
-    );
+    _chatsSub = _repository
+        .watchChats(id)
+        .listen(
+          (chats) {
+            _chats = chats;
+            _isLoading = false;
+            notifyListeners();
+          },
+          onError: (Object e) {
+            _errorMessage = 'Could not load your chats. Check your connection and try again.';
+            _isLoading = false;
+            notifyListeners();
+          },
+        );
   }
 
   /// "Message seller" on a listing: finds or creates the chat and returns it.
@@ -131,19 +133,22 @@ class ChatProvider extends ChangeNotifier {
     _messagesError = null;
     notifyListeners();
 
-    _messagesSub = _repository.watchMessages(chatId).listen(
-      (messages) {
-        _activeMessages = messages;
-        _isLoadingMessages = false;
-        notifyListeners();
-        _markRead(chatId);
-      },
-      onError: (Object e) {
-        _messagesError = 'Could not load messages. Check your connection and try again.';
-        _isLoadingMessages = false;
-        notifyListeners();
-      },
-    );
+    _messagesSub = _repository
+        .watchMessages(chatId)
+        .listen(
+          (messages) {
+            _activeMessages = messages;
+            _isLoadingMessages = false;
+            notifyListeners();
+            _markRead(chatId);
+          },
+          onError: (Object e) {
+            _messagesError =
+                'Could not load messages. Check your connection and try again.';
+            _isLoadingMessages = false;
+            notifyListeners();
+          },
+        );
   }
 
   /// Sends a message (text, photo or both) from the signed-in user.
@@ -155,7 +160,8 @@ class ChatProvider extends ChangeNotifier {
   }) async {
     final me = currentUserId;
     final clean = text.trim();
-    if (me == null || (clean.isEmpty && photo.isEmpty) || _isSending) return false;
+    if (me == null || (clean.isEmpty && photo.isEmpty) || _isSending)
+      return false;
 
     final message = Message(
       id: DateTime.now().microsecondsSinceEpoch.toString(),

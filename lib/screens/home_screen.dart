@@ -45,7 +45,10 @@ class _HomeScreenState extends State<HomeScreen> {
         actions: [
           IconButton(
             tooltip: 'Filter',
-            icon: Badge(isLabelVisible: filter.isActive, child: const Icon(Icons.tune)),
+            icon: Badge(
+              isLabelVisible: filter.isActive,
+              child: const Icon(Icons.tune),
+            ),
             onPressed: () => showModalBottomSheet(
               context: context,
               isScrollControlled: true,
@@ -106,7 +109,11 @@ class _HomeScreenState extends State<HomeScreen> {
     );
   }
 
-  Widget _categoryChip(ListingsProvider provider, String label, String? category) {
+  Widget _categoryChip(
+    ListingsProvider provider,
+    String label,
+    String? category,
+  ) {
     final f = provider.filter;
     return Padding(
       padding: const EdgeInsets.only(right: 8),
@@ -114,7 +121,11 @@ class _HomeScreenState extends State<HomeScreen> {
         label: Text(label),
         selected: f.category == category,
         onSelected: (_) => provider.setFilter(
-          ListingFilter(category: category, maxPrice: f.maxPrice, availableOnly: f.availableOnly),
+          ListingFilter(
+            category: category,
+            maxPrice: f.maxPrice,
+            availableOnly: f.availableOnly,
+          ),
         ),
       ),
     );
@@ -150,7 +161,9 @@ class _HomeScreenState extends State<HomeScreen> {
       );
     }
     // Empty marketplace (nothing posted yet, no search or filter used)
-    if (listings.isEmpty && provider.search.trim().isEmpty && !provider.filter.isActive) {
+    if (listings.isEmpty &&
+        provider.search.trim().isEmpty &&
+        !provider.filter.isActive) {
       return EmptyState(
         icon: Icons.storefront_outlined,
         title: 'No listings yet',
@@ -199,13 +212,18 @@ class _HomeScreenState extends State<HomeScreen> {
           showLoginPrompt(
             context,
             title: 'Login to Save',
-            message: 'You need an account to save favorite items to your wishlist.',
+            message:
+                'You need an account to save favorite items to your wishlist.',
           );
           return;
         }
         context.read<ListingsProvider>().toggleFavorite(l.id);
       },
-      onTap: () => Navigator.pushNamed(context, AppRoutes.listingDetail, arguments: l.id),
+      onTap: () => Navigator.pushNamed(
+        context,
+        AppRoutes.listingDetail,
+        arguments: l.id,
+      ),
     );
   }
 }

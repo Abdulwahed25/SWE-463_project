@@ -35,7 +35,8 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
   /// The user as it was when the screen opened (to detect unsaved changes).
   User? _original;
   bool _isSaving = false;
-  bool _triedToSave = false; // show errors while typing only after the first Save press
+  bool _triedToSave =
+      false; // show errors while typing only after the first Save press
 
   @override
   void initState() {
@@ -103,13 +104,18 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
 
     if (success) {
       messenger.showSnackBar(
-        const SnackBar(content: Text('Profile updated successfully!'), backgroundColor: SouqColors.green),
+        const SnackBar(
+          content: Text('Profile updated successfully!'),
+          backgroundColor: SouqColors.green,
+        ),
       );
       navigator.pop();
     } else {
       messenger.showSnackBar(
         SnackBar(
-          content: Text(auth.errorMessage ?? 'Failed to update profile. Try again.'),
+          content: Text(
+            auth.errorMessage ?? 'Failed to update profile. Try again.',
+          ),
           backgroundColor: SouqColors.error,
         ),
       );
@@ -122,9 +128,14 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
       context: context,
       builder: (ctx) => AlertDialog(
         title: const Text('Discard changes?'),
-        content: const Text('Your changes to your profile have not been saved.'),
+        content: const Text(
+          'Your changes to your profile have not been saved.',
+        ),
         actions: [
-          TextButton(onPressed: () => Navigator.pop(ctx, false), child: const Text('Keep editing')),
+          TextButton(
+            onPressed: () => Navigator.pop(ctx, false),
+            child: const Text('Keep editing'),
+          ),
           FilledButton(
             style: FilledButton.styleFrom(backgroundColor: SouqColors.error),
             onPressed: () => Navigator.pop(ctx, true),
@@ -167,7 +178,9 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
           padding: const EdgeInsets.all(20),
           child: Form(
             key: _formKey,
-            autovalidateMode: _triedToSave ? AutovalidateMode.onUserInteraction : AutovalidateMode.disabled,
+            autovalidateMode: _triedToSave
+                ? AutovalidateMode.onUserInteraction
+                : AutovalidateMode.disabled,
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.stretch,
               children: [
@@ -176,7 +189,10 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
                 _ReadOnlyField(value: user.email, icon: Icons.email_outlined),
                 const SizedBox(height: 16),
                 const _Label('Student ID'),
-                _ReadOnlyField(value: user.studentId, icon: Icons.badge_outlined),
+                _ReadOnlyField(
+                  value: user.studentId,
+                  icon: Icons.badge_outlined,
+                ),
                 const SizedBox(height: 6),
                 const Text(
                   'Email and student ID are linked to your account and cannot be changed.',
@@ -191,7 +207,10 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
                   textInputAction: TextInputAction.next,
                   decoration: const InputDecoration(
                     hintText: 'Enter your name',
-                    prefixIcon: Icon(Icons.person_outline, color: SouqColors.subText),
+                    prefixIcon: Icon(
+                      Icons.person_outline,
+                      color: SouqColors.subText,
+                    ),
                   ),
                   validator: ProfileValidators.name,
                 ),
@@ -201,7 +220,8 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
                 PhoneField(
                   controller: _phoneController,
                   country: _phoneCountry,
-                  onCountryChanged: (country) => setState(() => _phoneCountry = country),
+                  onCountryChanged: (country) =>
+                      setState(() => _phoneCountry = country),
                   textInputAction: TextInputAction.next,
                 ),
                 const SizedBox(height: 16),
@@ -222,7 +242,10 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
                       ? const SizedBox(
                           width: 22,
                           height: 22,
-                          child: CircularProgressIndicator(strokeWidth: 2.5, color: Colors.white),
+                          child: CircularProgressIndicator(
+                            strokeWidth: 2.5,
+                            color: Colors.white,
+                          ),
                         )
                       : const Text('Save changes'),
                 ),
@@ -244,7 +267,10 @@ class _Label extends StatelessWidget {
   Widget build(BuildContext context) {
     return Padding(
       padding: const EdgeInsets.only(bottom: 6),
-      child: Text(text, style: const TextStyle(fontSize: 13, fontWeight: FontWeight.w600)),
+      child: Text(
+        text,
+        style: const TextStyle(fontSize: 13, fontWeight: FontWeight.w600),
+      ),
     );
   }
 }
@@ -264,7 +290,11 @@ class _ReadOnlyField extends StatelessWidget {
       style: const TextStyle(color: SouqColors.subText),
       decoration: InputDecoration(
         prefixIcon: Icon(icon, color: SouqColors.hint),
-        suffixIcon: const Icon(Icons.lock_outline, size: 18, color: SouqColors.hint),
+        suffixIcon: const Icon(
+          Icons.lock_outline,
+          size: 18,
+          color: SouqColors.hint,
+        ),
       ),
     );
   }

@@ -42,14 +42,20 @@ class ListingCard extends StatelessWidget {
               Stack(
                 children: [
                   PhotoView(photo: photo, height: 118, width: double.infinity),
-                  Positioned(top: 8, left: 8, child: StatusBadge(isSold: isSold)),
+                  Positioned(
+                    top: 8,
+                    left: 8,
+                    child: StatusBadge(isSold: isSold),
+                  ),
                   Positioned(
                     top: 4,
                     right: 4,
                     child: IconButton(
                       onPressed: onFavorite,
                       tooltip: 'Favorite',
-                      style: IconButton.styleFrom(backgroundColor: Colors.white),
+                      style: IconButton.styleFrom(
+                        backgroundColor: Colors.white,
+                      ),
                       icon: Icon(
                         isFavorite ? Icons.favorite : Icons.favorite_border,
                         size: 18,
@@ -68,7 +74,11 @@ class ListingCard extends StatelessWidget {
                       title,
                       maxLines: 2,
                       overflow: TextOverflow.ellipsis,
-                      style: const TextStyle(fontSize: 14, fontWeight: FontWeight.w600, color: SouqColors.text),
+                      style: const TextStyle(
+                        fontSize: 14,
+                        fontWeight: FontWeight.w600,
+                        color: SouqColors.text,
+                      ),
                     ),
                     const SizedBox(height: 4),
                     Text(
@@ -80,7 +90,13 @@ class ListingCard extends StatelessWidget {
                       ),
                     ),
                     const SizedBox(height: 4),
-                    Text(location, style: const TextStyle(fontSize: 12, color: SouqColors.hint)),
+                    Text(
+                      location,
+                      style: const TextStyle(
+                        fontSize: 12,
+                        color: SouqColors.hint,
+                      ),
+                    ),
                   ],
                 ),
               ),

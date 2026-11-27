@@ -38,19 +38,13 @@ class AuthProvider extends ChangeNotifier {
   }
 
   /// Attempts to log in with KFUPM credentials.
-  Future<bool> login({
-    required String email,
-    required String password,
-  }) async {
+  Future<bool> login({required String email, required String password}) async {
     _isLoading = true;
     _errorMessage = null;
     notifyListeners();
 
     try {
-      final user = await _repository.login(
-        email: email,
-        password: password,
-      );
+      final user = await _repository.login(email: email, password: password);
       _user = user;
       Session.setUser(user);
       _isLoading = false;

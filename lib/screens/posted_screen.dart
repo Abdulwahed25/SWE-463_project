@@ -22,16 +22,25 @@ class PostedScreen extends StatelessWidget {
             if (listingId != null)
               MessagePageAction(
                 'View listing',
-                () => Navigator.pushReplacementNamed(context, AppRoutes.listingDetail, arguments: listingId),
+                () => Navigator.pushReplacementNamed(
+                  context,
+                  AppRoutes.listingDetail,
+                  arguments: listingId,
+                ),
                 primary: true,
               ),
             MessagePageAction(
               'View my listings',
-              () => Navigator.pushReplacementNamed(context, AppRoutes.myListings),
+              () =>
+                  Navigator.pushReplacementNamed(context, AppRoutes.myListings),
             ),
             MessagePageAction(
               'Back to Home',
-              () => Navigator.pushNamedAndRemoveUntil(context, AppRoutes.home, (route) => false),
+              () => Navigator.pushNamedAndRemoveUntil(
+                context,
+                AppRoutes.home,
+                (route) => false,
+              ),
             ),
           ],
         ),

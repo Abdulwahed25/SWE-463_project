@@ -105,10 +105,7 @@ class _LoginScreenState extends State<LoginScreen> {
                   const Center(
                     child: Text(
                       'KFUPM Student Marketplace',
-                      style: TextStyle(
-                        fontSize: 14,
-                        color: SouqColors.subText,
-                      ),
+                      style: TextStyle(fontSize: 14, color: SouqColors.subText),
                     ),
                   ),
                   const SizedBox(height: 24),
@@ -123,7 +120,11 @@ class _LoginScreenState extends State<LoginScreen> {
                     ),
                     child: Row(
                       children: [
-                        const Icon(Icons.info_outline, color: SouqColors.teal, size: 22),
+                        const Icon(
+                          Icons.info_outline,
+                          color: SouqColors.teal,
+                          size: 22,
+                        ),
                         const SizedBox(width: 10),
                         Expanded(
                           child: Column(
@@ -151,11 +152,17 @@ class _LoginScreenState extends State<LoginScreen> {
                         TextButton(
                           onPressed: _fillDemoCredentials,
                           style: TextButton.styleFrom(
-                            padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
+                            padding: const EdgeInsets.symmetric(
+                              horizontal: 8,
+                              vertical: 4,
+                            ),
                             minimumSize: Size.zero,
                             tapTargetSize: MaterialTapTargetSize.shrinkWrap,
                           ),
-                          child: const Text('Auto-fill', style: TextStyle(fontSize: 12)),
+                          child: const Text(
+                            'Auto-fill',
+                            style: TextStyle(fontSize: 12),
+                          ),
                         ),
                       ],
                     ),
@@ -169,20 +176,33 @@ class _LoginScreenState extends State<LoginScreen> {
                       decoration: BoxDecoration(
                         color: SouqColors.errorBackground,
                         borderRadius: BorderRadius.circular(kSouqRadius),
-                        border: Border.all(color: SouqColors.error.withValues(alpha: 0.5)),
+                        border: Border.all(
+                          color: SouqColors.error.withValues(alpha: 0.5),
+                        ),
                       ),
                       child: Row(
                         children: [
-                          const Icon(Icons.error_outline, color: SouqColors.error, size: 20),
+                          const Icon(
+                            Icons.error_outline,
+                            color: SouqColors.error,
+                            size: 20,
+                          ),
                           const SizedBox(width: 8),
                           Expanded(
                             child: Text(
                               auth.errorMessage!,
-                              style: const TextStyle(color: SouqColors.error, fontSize: 13),
+                              style: const TextStyle(
+                                color: SouqColors.error,
+                                fontSize: 13,
+                              ),
                             ),
                           ),
                           IconButton(
-                            icon: const Icon(Icons.close, size: 16, color: SouqColors.error),
+                            icon: const Icon(
+                              Icons.close,
+                              size: 16,
+                              color: SouqColors.error,
+                            ),
                             padding: EdgeInsets.zero,
                             constraints: const BoxConstraints(),
                             onPressed: auth.clearError,
@@ -194,7 +214,10 @@ class _LoginScreenState extends State<LoginScreen> {
                   ],
 
                   // Email Field
-                  const Text('Email', style: TextStyle(fontSize: 13, fontWeight: FontWeight.w600)),
+                  const Text(
+                    'Email',
+                    style: TextStyle(fontSize: 13, fontWeight: FontWeight.w600),
+                  ),
                   const SizedBox(height: 6),
                   TextFormField(
                     controller: _emailController,
@@ -202,7 +225,10 @@ class _LoginScreenState extends State<LoginScreen> {
                     textInputAction: TextInputAction.next,
                     decoration: const InputDecoration(
                       hintText: 'e.g. name@example.com',
-                      prefixIcon: Icon(Icons.email_outlined, color: SouqColors.subText),
+                      prefixIcon: Icon(
+                        Icons.email_outlined,
+                        color: SouqColors.subText,
+                      ),
                     ),
                     validator: (val) {
                       final text = val?.trim() ?? '';
@@ -216,7 +242,10 @@ class _LoginScreenState extends State<LoginScreen> {
                   const SizedBox(height: 16),
 
                   // Password Field
-                  const Text('Password', style: TextStyle(fontSize: 13, fontWeight: FontWeight.w600)),
+                  const Text(
+                    'Password',
+                    style: TextStyle(fontSize: 13, fontWeight: FontWeight.w600),
+                  ),
                   const SizedBox(height: 6),
                   TextFormField(
                     controller: _passwordController,
@@ -225,19 +254,27 @@ class _LoginScreenState extends State<LoginScreen> {
                     onFieldSubmitted: (_) => _handleLogin(),
                     decoration: InputDecoration(
                       hintText: 'Enter your password',
-                      prefixIcon: const Icon(Icons.lock_outline, color: SouqColors.subText),
+                      prefixIcon: const Icon(
+                        Icons.lock_outline,
+                        color: SouqColors.subText,
+                      ),
                       suffixIcon: IconButton(
                         icon: Icon(
-                          _obscurePassword ? Icons.visibility_off_outlined : Icons.visibility_outlined,
+                          _obscurePassword
+                              ? Icons.visibility_off_outlined
+                              : Icons.visibility_outlined,
                           color: SouqColors.subText,
                         ),
-                        onPressed: () => setState(() => _obscurePassword = !_obscurePassword),
+                        onPressed: () => setState(
+                          () => _obscurePassword = !_obscurePassword,
+                        ),
                       ),
                     ),
                     validator: (val) {
                       final text = val ?? '';
                       if (text.isEmpty) return 'Please enter your password.';
-                      if (text.length < 6) return 'Password must be at least 6 characters.';
+                      if (text.length < 6)
+                        return 'Password must be at least 6 characters.';
                       return null;
                     },
                   ),
@@ -294,7 +331,11 @@ class _LoginScreenState extends State<LoginScreen> {
                         padding: EdgeInsets.symmetric(horizontal: 12),
                         child: Text(
                           'OR',
-                          style: TextStyle(color: SouqColors.hint, fontSize: 12, fontWeight: FontWeight.w600),
+                          style: TextStyle(
+                            color: SouqColors.hint,
+                            fontSize: 12,
+                            fontWeight: FontWeight.w600,
+                          ),
                         ),
                       ),
                       Expanded(child: Divider()),

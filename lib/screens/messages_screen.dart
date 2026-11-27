@@ -78,7 +78,9 @@ class _MessagesScreenState extends State<MessagesScreen> {
                       )
                     : null,
                 filled: true,
-                fillColor: theme.colorScheme.surfaceContainerHighest.withValues(alpha: 0.5),
+                fillColor: theme.colorScheme.surfaceContainerHighest.withValues(
+                  alpha: 0.5,
+                ),
                 border: OutlineInputBorder(
                   borderRadius: BorderRadius.circular(12),
                   borderSide: BorderSide.none,
@@ -90,7 +92,13 @@ class _MessagesScreenState extends State<MessagesScreen> {
           Expanded(
             child: RefreshIndicator(
               onRefresh: () async => chatProvider.loadChats(),
-              child: _buildBody(context, chatProvider, listingsProvider, filteredChats, myId),
+              child: _buildBody(
+                context,
+                chatProvider,
+                listingsProvider,
+                filteredChats,
+                myId,
+              ),
             ),
           ),
         ],
@@ -134,9 +142,11 @@ class _MessagesScreenState extends State<MessagesScreen> {
     }
 
     return ListView.separated(
-      physics: const AlwaysScrollableScrollPhysics(), // so pull-to-refresh works
+      physics:
+          const AlwaysScrollableScrollPhysics(), // so pull-to-refresh works
       itemCount: filteredChats.length,
-      separatorBuilder: (context, index) => const Divider(height: 1, indent: 72),
+      separatorBuilder: (context, index) =>
+          const Divider(height: 1, indent: 72),
       itemBuilder: (context, index) {
         final chat = filteredChats[index];
         final listing = listingsProvider.byId(chat.listingId);

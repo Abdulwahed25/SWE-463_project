@@ -9,11 +9,13 @@ void main() {
   late ListingsProvider provider;
 
   setUp(() {
-    repo = FakeListingRepository(initial: [
-      testListing('1', 'Calculus book', 60, 'Books'),
-      testListing('2', 'Desk lamp', 35, 'Furniture'),
-      testListing('3', 'Office chair', 150, 'Furniture', sold: true),
-    ]);
+    repo = FakeListingRepository(
+      initial: [
+        testListing('1', 'Calculus book', 60, 'Books'),
+        testListing('2', 'Desk lamp', 35, 'Furniture'),
+        testListing('3', 'Office chair', 150, 'Furniture', sold: true),
+      ],
+    );
     provider = ListingsProvider(repo);
   });
 
@@ -36,7 +38,9 @@ void main() {
     expect(provider.visibleListings.map((l) => l.id), ['2']);
 
     provider.clearFilters();
-    provider.setFilter(const ListingFilter(category: 'Furniture', availableOnly: true));
+    provider.setFilter(
+      const ListingFilter(category: 'Furniture', availableOnly: true),
+    );
     expect(provider.visibleListings.map((l) => l.id), ['2']);
 
     provider.setFilter(const ListingFilter(maxPrice: 50));
@@ -65,18 +69,21 @@ void main() {
     expect(provider.byId('1')!.isSold, true);
   });
 
-  test('toggleFavorite() saves and removes a favorite for the signed-in user', () async {
-    provider.setUser('me');
-    await provider.load();
-    expect(await provider.toggleFavorite('2'), true);
-    expect(provider.isFavorite('2'), true);
-    expect(repo.savedFavorites('me'), {'2'});
-    expect(provider.favorites.map((l) => l.id), ['2']);
+  test(
+    'toggleFavorite() saves and removes a favorite for the signed-in user',
+    () async {
+      provider.setUser('me');
+      await provider.load();
+      expect(await provider.toggleFavorite('2'), true);
+      expect(provider.isFavorite('2'), true);
+      expect(repo.savedFavorites('me'), {'2'});
+      expect(provider.favorites.map((l) => l.id), ['2']);
 
-    await provider.toggleFavorite('2');
-    expect(provider.isFavorite('2'), false);
-    expect(repo.savedFavorites('me'), isEmpty);
-  });
+      await provider.toggleFavorite('2');
+      expect(provider.isFavorite('2'), false);
+      expect(repo.savedFavorites('me'), isEmpty);
+    },
+  );
 
   test('a guest cannot save favorites', () async {
     await provider.load();

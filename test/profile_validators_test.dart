@@ -37,18 +37,30 @@ void main() {
     });
 
     test('rejects numbers that are too short or too long', () {
-      expect(ProfileValidators.phone('5303', saudi), 'Enter 9 digits (you entered 4).');
-      expect(ProfileValidators.phone('5303442261', saudi), 'Enter 9 digits (you entered 10).');
+      expect(
+        ProfileValidators.phone('5303', saudi),
+        'Enter 9 digits (you entered 4).',
+      );
+      expect(
+        ProfileValidators.phone('5303442261', saudi),
+        'Enter 9 digits (you entered 10).',
+      );
     });
 
     test('rejects a Saudi number that is not a mobile', () {
-      expect(ProfileValidators.phone('130344226', saudi), contains('start with 5'));
+      expect(
+        ProfileValidators.phone('130344226', saudi),
+        contains('start with 5'),
+      );
     });
 
     test('uses the rules of the picked country', () {
       final kuwait = Country.all.firstWhere((c) => c.name == 'Kuwait');
       expect(ProfileValidators.phone('9876-5432', kuwait), isNull); // 8 digits
-      expect(ProfileValidators.phone('530344226', kuwait), isNotNull); // 9 digits is wrong here
+      expect(
+        ProfileValidators.phone('530344226', kuwait),
+        isNotNull,
+      ); // 9 digits is wrong here
     });
   });
 
@@ -63,16 +75,25 @@ void main() {
     });
 
     test('rejects a non-Saudi prefix', () {
-      expect(ProfileValidators.iban('AE070331234567890123456'), 'Saudi IBAN must start with SA.');
+      expect(
+        ProfileValidators.iban('AE070331234567890123456'),
+        'Saudi IBAN must start with SA.',
+      );
     });
 
     test('rejects the wrong length', () {
-      expect(ProfileValidators.iban('SA03800000006080'), 'Enter the 22 digits after SA (you entered 14).');
+      expect(
+        ProfileValidators.iban('SA03800000006080'),
+        'Enter the 22 digits after SA (you entered 14).',
+      );
     });
 
     test('rejects wrong check digits (a typo in the number)', () {
       // Same IBAN with the last digit changed
-      expect(ProfileValidators.iban('SA0380000000608010167518'), contains('not valid'));
+      expect(
+        ProfileValidators.iban('SA0380000000608010167518'),
+        contains('not valid'),
+      );
     });
   });
 

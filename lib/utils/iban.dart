@@ -53,7 +53,10 @@ bool hasValidIbanChecksum(String input) {
 }
 
 /// Copies the IBAN (without spaces) and shows a confirmation snackbar.
-Future<void> copyIbanToClipboard(ScaffoldMessengerState messenger, String iban) async {
+Future<void> copyIbanToClipboard(
+  ScaffoldMessengerState messenger,
+  String iban,
+) async {
   await Clipboard.setData(ClipboardData(text: normalizeIban(iban)));
   messenger
     ..hideCurrentSnackBar()

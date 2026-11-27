@@ -27,24 +27,26 @@ class AppRoutes {
   static const String myListings = '/my-listings';
 
   static Map<String, WidgetBuilder> get routes => {
-        login: (_) => const LoginScreen(),
-        signUp: (_) => const SignUpScreen(),
-        home: (_) => const MainShell(),
-        listingDetail: (_) => const ListingDetailScreen(),
-        messages: (_) => const MessagesScreen(),
-        chat: (context) {
-          // Arguments come from "Message seller" or from the Messages tab.
-          final args = ModalRoute.of(context)?.settings.arguments as Map<String, dynamic>? ?? {};
-          return ChatScreen(
-            chatId: args['chatId'] as String? ?? '',
-            peerName: args['peerName'] as String? ?? 'KFUPM student',
-            itemTitle: args['itemTitle'] as String? ?? '',
-            itemPrice: (args['itemPrice'] as num?)?.toDouble() ?? 0,
-          );
-        },
-        postListing: (_) => const PostListingScreen(),
-        posted: (_) => const PostedScreen(),
-        editProfile: (_) => const EditProfileScreen(),
-        myListings: (_) => const MyListingsScreen(),
-      };
+    login: (_) => const LoginScreen(),
+    signUp: (_) => const SignUpScreen(),
+    home: (_) => const MainShell(),
+    listingDetail: (_) => const ListingDetailScreen(),
+    messages: (_) => const MessagesScreen(),
+    chat: (context) {
+      // Arguments come from "Message seller" or from the Messages tab.
+      final args =
+          ModalRoute.of(context)?.settings.arguments as Map<String, dynamic>? ??
+          {};
+      return ChatScreen(
+        chatId: args['chatId'] as String? ?? '',
+        peerName: args['peerName'] as String? ?? 'KFUPM student',
+        itemTitle: args['itemTitle'] as String? ?? '',
+        itemPrice: (args['itemPrice'] as num?)?.toDouble() ?? 0,
+      );
+    },
+    postListing: (_) => const PostListingScreen(),
+    posted: (_) => const PostedScreen(),
+    editProfile: (_) => const EditProfileScreen(),
+    myListings: (_) => const MyListingsScreen(),
+  };
 }

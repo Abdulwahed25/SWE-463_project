@@ -9,13 +9,14 @@ import 'auth_repository.dart';
 /// Firestore at users/{uid}.
 class FirebaseAuthRepository implements AuthRepository {
   FirebaseAuthRepository({fb.FirebaseAuth? auth, FirebaseFirestore? firestore})
-      : _auth = auth ?? fb.FirebaseAuth.instance,
-        _db = firestore ?? FirebaseFirestore.instance;
+    : _auth = auth ?? fb.FirebaseAuth.instance,
+      _db = firestore ?? FirebaseFirestore.instance;
 
   final fb.FirebaseAuth _auth;
   final FirebaseFirestore _db;
 
-  CollectionReference<Map<String, dynamic>> get _users => _db.collection('users');
+  CollectionReference<Map<String, dynamic>> get _users =>
+      _db.collection('users');
 
   @override
   Future<User?> getCurrentUser() async {

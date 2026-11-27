@@ -22,13 +22,20 @@ class ProfileScreen extends StatelessWidget {
         title: const Text('Log out'),
         content: const Text('Are you sure you want to log out of Souq?'),
         actions: [
-          TextButton(onPressed: () => Navigator.pop(ctx), child: const Text('Cancel')),
+          TextButton(
+            onPressed: () => Navigator.pop(ctx),
+            child: const Text('Cancel'),
+          ),
           FilledButton(
             onPressed: () async {
               Navigator.pop(ctx);
               await context.read<AuthProvider>().logout();
               if (!context.mounted) return;
-              Navigator.pushNamedAndRemoveUntil(context, AppRoutes.login, (route) => false);
+              Navigator.pushNamedAndRemoveUntil(
+                context,
+                AppRoutes.login,
+                (route) => false,
+              );
             },
             child: const Text('Log out'),
           ),
@@ -84,12 +91,18 @@ class _UserProfile extends StatelessWidget {
           SectionCard(
             child: Column(
               children: [
-                _InfoTile(icon: Icons.badge_outlined, label: 'Student ID', value: user.studentId),
+                _InfoTile(
+                  icon: Icons.badge_outlined,
+                  label: 'Student ID',
+                  value: user.studentId,
+                ),
                 const Divider(height: 1, indent: 56),
                 _InfoTile(
                   icon: Icons.phone_outlined,
                   label: 'Phone Number',
-                  value: user.phone.isEmpty ? 'Not provided' : formatPhoneForDisplay(user.phone),
+                  value: user.phone.isEmpty
+                      ? 'Not provided'
+                      : formatPhoneForDisplay(user.phone),
                 ),
                 const Divider(height: 1, indent: 56),
                 if (hasIban)
@@ -99,21 +112,41 @@ class _UserProfile extends StatelessWidget {
                     value: formatIban(user.iban),
                     trailing: IconButton(
                       tooltip: 'Copy IBAN',
-                      icon: const Icon(Icons.copy_outlined, size: 18, color: SouqColors.teal),
-                      onPressed: () => copyIbanToClipboard(ScaffoldMessenger.of(context), user.iban),
+                      icon: const Icon(
+                        Icons.copy_outlined,
+                        size: 18,
+                        color: SouqColors.teal,
+                      ),
+                      onPressed: () => copyIbanToClipboard(
+                        ScaffoldMessenger.of(context),
+                        user.iban,
+                      ),
                     ),
                   )
                 else
                   // No IBAN yet: remind the seller, buyers need it to pay them
                   ListTile(
-                    leading: const Icon(Icons.account_balance_outlined, color: SouqColors.error),
+                    leading: const Icon(
+                      Icons.account_balance_outlined,
+                      color: SouqColors.error,
+                    ),
                     title: const Text(
                       'Add your IBAN',
-                      style: TextStyle(fontWeight: FontWeight.w600, color: SouqColors.text),
+                      style: TextStyle(
+                        fontWeight: FontWeight.w600,
+                        color: SouqColors.text,
+                      ),
                     ),
-                    subtitle: const Text('Buyers need it to pay you by bank transfer.'),
-                    trailing: const Icon(Icons.arrow_forward_ios, size: 16, color: SouqColors.hint),
-                    onTap: () => Navigator.pushNamed(context, AppRoutes.editProfile),
+                    subtitle: const Text(
+                      'Buyers need it to pay you by bank transfer.',
+                    ),
+                    trailing: const Icon(
+                      Icons.arrow_forward_ios,
+                      size: 16,
+                      color: SouqColors.hint,
+                    ),
+                    onTap: () =>
+                        Navigator.pushNamed(context, AppRoutes.editProfile),
                   ),
               ],
             ),
@@ -127,13 +160,15 @@ class _UserProfile extends StatelessWidget {
                 _ActionTile(
                   icon: Icons.edit_outlined,
                   title: 'Edit Profile & IBAN',
-                  onTap: () => Navigator.pushNamed(context, AppRoutes.editProfile),
+                  onTap: () =>
+                      Navigator.pushNamed(context, AppRoutes.editProfile),
                 ),
                 const Divider(height: 1, indent: 56),
                 _ActionTile(
                   icon: Icons.list_alt_outlined,
                   title: 'My Listings',
-                  onTap: () => Navigator.pushNamed(context, AppRoutes.myListings),
+                  onTap: () =>
+                      Navigator.pushNamed(context, AppRoutes.myListings),
                 ),
               ],
             ),
@@ -142,7 +177,10 @@ class _UserProfile extends StatelessWidget {
 
           OutlinedButton.icon(
             icon: const Icon(Icons.logout, color: SouqColors.error),
-            label: const Text('Log out', style: TextStyle(color: SouqColors.error)),
+            label: const Text(
+              'Log out',
+              style: TextStyle(color: SouqColors.error),
+            ),
             style: OutlinedButton.styleFrom(
               side: const BorderSide(color: SouqColors.error),
               backgroundColor: Colors.white,
@@ -163,7 +201,11 @@ class _ProfileHeader extends StatelessWidget {
 
   /// "Ayman Musalli" -> "AM", "Ayman" -> "A".
   static String initials(String name) {
-    final parts = name.trim().split(RegExp(r'\s+')).where((p) => p.isNotEmpty).toList();
+    final parts = name
+        .trim()
+        .split(RegExp(r'\s+'))
+        .where((p) => p.isNotEmpty)
+        .toList();
     if (parts.isEmpty) return '?';
     if (parts.length == 1) return parts.first[0].toUpperCase();
     return (parts.first[0] + parts.last[0]).toUpperCase();
@@ -180,17 +222,28 @@ class _ProfileHeader extends StatelessWidget {
             backgroundColor: SouqColors.teal.withValues(alpha: 0.12),
             child: Text(
               initials(user.name),
-              style: const TextStyle(fontSize: 28, fontWeight: FontWeight.bold, color: SouqColors.teal),
+              style: const TextStyle(
+                fontSize: 28,
+                fontWeight: FontWeight.bold,
+                color: SouqColors.teal,
+              ),
             ),
           ),
           const SizedBox(height: 14),
           Text(
             user.name,
             textAlign: TextAlign.center,
-            style: const TextStyle(fontSize: 20, fontWeight: FontWeight.bold, color: SouqColors.text),
+            style: const TextStyle(
+              fontSize: 20,
+              fontWeight: FontWeight.bold,
+              color: SouqColors.text,
+            ),
           ),
           const SizedBox(height: 4),
-          Text(user.email, style: const TextStyle(fontSize: 14, color: SouqColors.subText)),
+          Text(
+            user.email,
+            style: const TextStyle(fontSize: 14, color: SouqColors.subText),
+          ),
         ],
       ),
     );
@@ -239,10 +292,17 @@ class _StatItem extends StatelessWidget {
         children: [
           Text(
             value,
-            style: const TextStyle(fontSize: 20, fontWeight: FontWeight.bold, color: SouqColors.teal),
+            style: const TextStyle(
+              fontSize: 20,
+              fontWeight: FontWeight.bold,
+              color: SouqColors.teal,
+            ),
           ),
           const SizedBox(height: 2),
-          Text(label, style: const TextStyle(fontSize: 12, color: SouqColors.subText)),
+          Text(
+            label,
+            style: const TextStyle(fontSize: 12, color: SouqColors.subText),
+          ),
         ],
       ),
     );
@@ -259,7 +319,11 @@ class _StatDivider extends StatelessWidget {
 }
 
 class _ActionTile extends StatelessWidget {
-  const _ActionTile({required this.icon, required this.title, required this.onTap});
+  const _ActionTile({
+    required this.icon,
+    required this.title,
+    required this.onTap,
+  });
 
   final IconData icon;
   final String title;
@@ -270,14 +334,23 @@ class _ActionTile extends StatelessWidget {
     return ListTile(
       leading: Icon(icon, color: SouqColors.teal),
       title: Text(title, style: const TextStyle(fontWeight: FontWeight.w500)),
-      trailing: const Icon(Icons.arrow_forward_ios, size: 16, color: SouqColors.hint),
+      trailing: const Icon(
+        Icons.arrow_forward_ios,
+        size: 16,
+        color: SouqColors.hint,
+      ),
       onTap: onTap,
     );
   }
 }
 
 class _InfoTile extends StatelessWidget {
-  const _InfoTile({required this.icon, required this.label, required this.value, this.trailing});
+  const _InfoTile({
+    required this.icon,
+    required this.label,
+    required this.value,
+    this.trailing,
+  });
 
   final IconData icon;
   final String label;
@@ -288,10 +361,17 @@ class _InfoTile extends StatelessWidget {
   Widget build(BuildContext context) {
     return ListTile(
       leading: Icon(icon, color: SouqColors.subText),
-      title: Text(label, style: const TextStyle(fontSize: 12, color: SouqColors.subText)),
+      title: Text(
+        label,
+        style: const TextStyle(fontSize: 12, color: SouqColors.subText),
+      ),
       subtitle: Text(
         value,
-        style: const TextStyle(fontSize: 14, fontWeight: FontWeight.w600, color: SouqColors.text),
+        style: const TextStyle(
+          fontSize: 14,
+          fontWeight: FontWeight.w600,
+          color: SouqColors.text,
+        ),
       ),
       trailing: trailing,
     );
@@ -313,13 +393,24 @@ class _GuestProfile extends StatelessWidget {
             Container(
               width: 80,
               height: 80,
-              decoration: BoxDecoration(color: SouqColors.teal.withValues(alpha: 0.1), shape: BoxShape.circle),
-              child: const Icon(Icons.person_outline, size: 44, color: SouqColors.teal),
+              decoration: BoxDecoration(
+                color: SouqColors.teal.withValues(alpha: 0.1),
+                shape: BoxShape.circle,
+              ),
+              child: const Icon(
+                Icons.person_outline,
+                size: 44,
+                color: SouqColors.teal,
+              ),
             ),
             const SizedBox(height: 18),
             const Text(
               'Guest Account',
-              style: TextStyle(fontSize: 22, fontWeight: FontWeight.bold, color: SouqColors.text),
+              style: TextStyle(
+                fontSize: 22,
+                fontWeight: FontWeight.bold,
+                color: SouqColors.text,
+              ),
             ),
             const SizedBox(height: 8),
             const Text(
@@ -332,13 +423,25 @@ class _GuestProfile extends StatelessWidget {
               padding: EdgeInsets.all(16),
               child: Column(
                 children: [
-                  _FeatureRow(icon: Icons.add_box_outlined, text: 'Post listings to sell items'),
+                  _FeatureRow(
+                    icon: Icons.add_box_outlined,
+                    text: 'Post listings to sell items',
+                  ),
                   SizedBox(height: 12),
-                  _FeatureRow(icon: Icons.chat_bubble_outline, text: 'Chat and message sellers directly'),
+                  _FeatureRow(
+                    icon: Icons.chat_bubble_outline,
+                    text: 'Chat and message sellers directly',
+                  ),
                   SizedBox(height: 12),
-                  _FeatureRow(icon: Icons.favorite_border, text: 'Save items to your wishlist'),
+                  _FeatureRow(
+                    icon: Icons.favorite_border,
+                    text: 'Save items to your wishlist',
+                  ),
                   SizedBox(height: 12),
-                  _FeatureRow(icon: Icons.account_balance_outlined, text: 'Receive payments with your IBAN'),
+                  _FeatureRow(
+                    icon: Icons.account_balance_outlined,
+                    text: 'Receive payments with your IBAN',
+                  ),
                 ],
               ),
             ),
@@ -368,7 +471,10 @@ class _FeatureRow extends StatelessWidget {
         Icon(icon, size: 20, color: SouqColors.teal),
         const SizedBox(width: 12),
         Expanded(
-          child: Text(text, style: const TextStyle(fontSize: 13, color: SouqColors.text)),
+          child: Text(
+            text,
+            style: const TextStyle(fontSize: 13, color: SouqColors.text),
+          ),
         ),
       ],
     );

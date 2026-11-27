@@ -20,15 +20,22 @@ String toStoredPhone(Country country, String typedNumber) {
   if (text.startsWith('+') || text.startsWith('00')) {
     digits = digits.replaceFirst(RegExp(r'^0+'), '');
     // Longest calling code first, so "966" wins over a shorter code like "96".
-    final countries = [...Country.all]..sort((a, b) => b.dialCode.length.compareTo(a.dialCode.length));
+    final countries = [...Country.all]
+      ..sort((a, b) => b.dialCode.length.compareTo(a.dialCode.length));
     for (final country in countries) {
       if (digits.startsWith(country.dialCode)) {
-        return (country: country, digits: digits.substring(country.dialCode.length));
+        return (
+          country: country,
+          digits: digits.substring(country.dialCode.length),
+        );
       }
     }
   }
   // Local number: drop the leading 0 ("0501234567" -> "501234567").
-  return (country: Country.saudiArabia, digits: digits.replaceFirst(RegExp(r'^0+'), ''));
+  return (
+    country: Country.saudiArabia,
+    digits: digits.replaceFirst(RegExp(r'^0+'), ''),
+  );
 }
 
 /// Cleans any saved phone into "+966530344226" (used to compare old and new values).
@@ -38,7 +45,8 @@ String normalizePhone(String stored) {
 }
 
 /// The local part as shown in the phone field: "53-034-4226".
-String formatLocalPhone(Country country, String digits) => formatDigitGroups(digits, country.groups, '-');
+String formatLocalPhone(Country country, String digits) =>
+    formatDigitGroups(digits, country.groups, '-');
 
 /// The full number for display: "+966 53-034-4226".
 String formatPhoneForDisplay(String stored) {

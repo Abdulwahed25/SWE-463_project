@@ -60,7 +60,11 @@ class _SignUpScreenState extends State<SignUpScreen> {
           backgroundColor: SouqColors.green,
         ),
       );
-      Navigator.pushNamedAndRemoveUntil(context, AppRoutes.home, (route) => false);
+      Navigator.pushNamedAndRemoveUntil(
+        context,
+        AppRoutes.home,
+        (route) => false,
+      );
     }
   }
 
@@ -70,9 +74,7 @@ class _SignUpScreenState extends State<SignUpScreen> {
 
     return Scaffold(
       backgroundColor: SouqColors.background,
-      appBar: AppBar(
-        title: const Text('Create Account'),
-      ),
+      appBar: AppBar(title: const Text('Create Account')),
       body: SafeArea(
         child: Center(
           child: SingleChildScrollView(
@@ -104,20 +106,33 @@ class _SignUpScreenState extends State<SignUpScreen> {
                       decoration: BoxDecoration(
                         color: SouqColors.errorBackground,
                         borderRadius: BorderRadius.circular(kSouqRadius),
-                        border: Border.all(color: SouqColors.error.withValues(alpha: 0.5)),
+                        border: Border.all(
+                          color: SouqColors.error.withValues(alpha: 0.5),
+                        ),
                       ),
                       child: Row(
                         children: [
-                          const Icon(Icons.error_outline, color: SouqColors.error, size: 20),
+                          const Icon(
+                            Icons.error_outline,
+                            color: SouqColors.error,
+                            size: 20,
+                          ),
                           const SizedBox(width: 8),
                           Expanded(
                             child: Text(
                               auth.errorMessage!,
-                              style: const TextStyle(color: SouqColors.error, fontSize: 13),
+                              style: const TextStyle(
+                                color: SouqColors.error,
+                                fontSize: 13,
+                              ),
                             ),
                           ),
                           IconButton(
-                            icon: const Icon(Icons.close, size: 16, color: SouqColors.error),
+                            icon: const Icon(
+                              Icons.close,
+                              size: 16,
+                              color: SouqColors.error,
+                            ),
                             padding: EdgeInsets.zero,
                             constraints: const BoxConstraints(),
                             onPressed: auth.clearError,
@@ -129,26 +144,36 @@ class _SignUpScreenState extends State<SignUpScreen> {
                   ],
 
                   // Full Name
-                  const Text('Full Name *', style: TextStyle(fontSize: 13, fontWeight: FontWeight.w600)),
+                  const Text(
+                    'Full Name *',
+                    style: TextStyle(fontSize: 13, fontWeight: FontWeight.w600),
+                  ),
                   const SizedBox(height: 6),
                   TextFormField(
                     controller: _nameController,
                     textInputAction: TextInputAction.next,
                     decoration: const InputDecoration(
                       hintText: 'e.g. Fname Lname',
-                      prefixIcon: Icon(Icons.person_outline, color: SouqColors.subText),
+                      prefixIcon: Icon(
+                        Icons.person_outline,
+                        color: SouqColors.subText,
+                      ),
                     ),
                     validator: (val) {
                       final text = val?.trim() ?? '';
                       if (text.isEmpty) return 'Please enter your full name.';
-                      if (text.length < 3) return 'Name must be at least 3 characters.';
+                      if (text.length < 3)
+                        return 'Name must be at least 3 characters.';
                       return null;
                     },
                   ),
                   const SizedBox(height: 14),
 
                   // Student ID
-                  const Text('Student ID *', style: TextStyle(fontSize: 13, fontWeight: FontWeight.w600)),
+                  const Text(
+                    'Student ID *',
+                    style: TextStyle(fontSize: 13, fontWeight: FontWeight.w600),
+                  ),
                   const SizedBox(height: 6),
                   TextFormField(
                     controller: _studentIdController,
@@ -156,19 +181,26 @@ class _SignUpScreenState extends State<SignUpScreen> {
                     textInputAction: TextInputAction.next,
                     decoration: const InputDecoration(
                       hintText: 'e.g. 202500123',
-                      prefixIcon: Icon(Icons.badge_outlined, color: SouqColors.subText),
+                      prefixIcon: Icon(
+                        Icons.badge_outlined,
+                        color: SouqColors.subText,
+                      ),
                     ),
                     validator: (val) {
                       final text = val?.trim() ?? '';
                       if (text.isEmpty) return 'Please enter your student ID.';
-                      if (text.length < 7) return 'Please enter a valid student ID.';
+                      if (text.length < 7)
+                        return 'Please enter a valid student ID.';
                       return null;
                     },
                   ),
                   const SizedBox(height: 14),
 
                   // Email
-                  const Text('Email *', style: TextStyle(fontSize: 13, fontWeight: FontWeight.w600)),
+                  const Text(
+                    'Email *',
+                    style: TextStyle(fontSize: 13, fontWeight: FontWeight.w600),
+                  ),
                   const SizedBox(height: 6),
                   TextFormField(
                     controller: _emailController,
@@ -176,7 +208,10 @@ class _SignUpScreenState extends State<SignUpScreen> {
                     textInputAction: TextInputAction.next,
                     decoration: const InputDecoration(
                       hintText: 'e.g. name@example.com',
-                      prefixIcon: Icon(Icons.email_outlined, color: SouqColors.subText),
+                      prefixIcon: Icon(
+                        Icons.email_outlined,
+                        color: SouqColors.subText,
+                      ),
                     ),
                     validator: (val) {
                       final text = val?.trim().toLowerCase() ?? '';
@@ -190,18 +225,25 @@ class _SignUpScreenState extends State<SignUpScreen> {
                   const SizedBox(height: 14),
 
                   // Phone Number (Optional)
-                  const Text('Phone Number (Optional)', style: TextStyle(fontSize: 13, fontWeight: FontWeight.w600)),
+                  const Text(
+                    'Phone Number (Optional)',
+                    style: TextStyle(fontSize: 13, fontWeight: FontWeight.w600),
+                  ),
                   const SizedBox(height: 6),
                   PhoneField(
                     controller: _phoneController,
                     country: _phoneCountry,
-                    onCountryChanged: (country) => setState(() => _phoneCountry = country),
+                    onCountryChanged: (country) =>
+                        setState(() => _phoneCountry = country),
                     textInputAction: TextInputAction.next,
                   ),
                   const SizedBox(height: 14),
 
                   // Password
-                  const Text('Password *', style: TextStyle(fontSize: 13, fontWeight: FontWeight.w600)),
+                  const Text(
+                    'Password *',
+                    style: TextStyle(fontSize: 13, fontWeight: FontWeight.w600),
+                  ),
                   const SizedBox(height: 6),
                   TextFormField(
                     controller: _passwordController,
@@ -209,26 +251,37 @@ class _SignUpScreenState extends State<SignUpScreen> {
                     textInputAction: TextInputAction.next,
                     decoration: InputDecoration(
                       hintText: 'At least 6 characters',
-                      prefixIcon: const Icon(Icons.lock_outline, color: SouqColors.subText),
+                      prefixIcon: const Icon(
+                        Icons.lock_outline,
+                        color: SouqColors.subText,
+                      ),
                       suffixIcon: IconButton(
                         icon: Icon(
-                          _obscurePassword ? Icons.visibility_off_outlined : Icons.visibility_outlined,
+                          _obscurePassword
+                              ? Icons.visibility_off_outlined
+                              : Icons.visibility_outlined,
                           color: SouqColors.subText,
                         ),
-                        onPressed: () => setState(() => _obscurePassword = !_obscurePassword),
+                        onPressed: () => setState(
+                          () => _obscurePassword = !_obscurePassword,
+                        ),
                       ),
                     ),
                     validator: (val) {
                       final text = val ?? '';
                       if (text.isEmpty) return 'Please enter a password.';
-                      if (text.length < 6) return 'Password must be at least 6 characters.';
+                      if (text.length < 6)
+                        return 'Password must be at least 6 characters.';
                       return null;
                     },
                   ),
                   const SizedBox(height: 14),
 
                   // Confirm Password
-                  const Text('Confirm Password *', style: TextStyle(fontSize: 13, fontWeight: FontWeight.w600)),
+                  const Text(
+                    'Confirm Password *',
+                    style: TextStyle(fontSize: 13, fontWeight: FontWeight.w600),
+                  ),
                   const SizedBox(height: 6),
                   TextFormField(
                     controller: _confirmPasswordController,
@@ -237,18 +290,26 @@ class _SignUpScreenState extends State<SignUpScreen> {
                     onFieldSubmitted: (_) => _handleSignUp(),
                     decoration: InputDecoration(
                       hintText: 'Re-enter your password',
-                      prefixIcon: const Icon(Icons.lock_reset_outlined, color: SouqColors.subText),
+                      prefixIcon: const Icon(
+                        Icons.lock_reset_outlined,
+                        color: SouqColors.subText,
+                      ),
                       suffixIcon: IconButton(
                         icon: Icon(
-                          _obscureConfirm ? Icons.visibility_off_outlined : Icons.visibility_outlined,
+                          _obscureConfirm
+                              ? Icons.visibility_off_outlined
+                              : Icons.visibility_outlined,
                           color: SouqColors.subText,
                         ),
-                        onPressed: () => setState(() => _obscureConfirm = !_obscureConfirm),
+                        onPressed: () =>
+                            setState(() => _obscureConfirm = !_obscureConfirm),
                       ),
                     ),
                     validator: (val) {
-                      if (val == null || val.isEmpty) return 'Please confirm your password.';
-                      if (val != _passwordController.text) return 'Passwords do not match.';
+                      if (val == null || val.isEmpty)
+                        return 'Please confirm your password.';
+                      if (val != _passwordController.text)
+                        return 'Passwords do not match.';
                       return null;
                     },
                   ),
