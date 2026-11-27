@@ -1,6 +1,7 @@
 # Builds the release APK for Android.
 # - Run it by hand from the Actions tab (workflow_dispatch), or
-# - push the final-submission tag: the APK is then attached to a GitHub release.
+# - push the final-submission tag.
+# The APK is attached to the final-submission GitHub release.
 name: Android APK
 
 on:
@@ -19,7 +20,7 @@ jobs:
       - uses: actions/setup-java@v4
         with:
           distribution: temurin
-          java-version: '17'
+          java-version: '21'
       - uses: subosito/flutter-action@v2
         with:
           channel: stable
@@ -31,7 +32,8 @@ jobs:
           name: souq-apk
           path: souq.apk
       - name: Attach the APK to the release
-        if: startsWith(github.ref, 'refs/tags/')
         uses: softprops/action-gh-release@v2
         with:
+          tag_name: final-submission
+          name: Souq final submission
           files: souq.apk
