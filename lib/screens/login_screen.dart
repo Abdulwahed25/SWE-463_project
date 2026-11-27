@@ -3,7 +3,6 @@ import 'package:provider/provider.dart';
 
 import '../app_routes.dart';
 import '../providers/auth_provider.dart';
-import '../services/local_auth_repository.dart';
 import '../theme.dart';
 
 class LoginScreen extends StatefulWidget {
@@ -14,6 +13,10 @@ class LoginScreen extends StatefulWidget {
 }
 
 class _LoginScreenState extends State<LoginScreen> {
+  // Shared demo account in Firebase, so the instructor can try the app quickly.
+  static const _demoEmail = 'student@kfupm.edu.sa';
+  static const _demoPassword = 'password123';
+
   final _formKey = GlobalKey<FormState>();
   final _emailController = TextEditingController();
   final _passwordController = TextEditingController();
@@ -28,8 +31,8 @@ class _LoginScreenState extends State<LoginScreen> {
 
   void _fillDemoCredentials() {
     setState(() {
-      _emailController.text = LocalAuthRepository.defaultDemoUser.email;
-      _passwordController.text = LocalAuthRepository.defaultDemoPassword;
+      _emailController.text = _demoEmail;
+      _passwordController.text = _demoPassword;
     });
   }
 
