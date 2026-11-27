@@ -89,7 +89,7 @@ class _MessagesScreenState extends State<MessagesScreen> {
           ),
           Expanded(
             child: RefreshIndicator(
-              onRefresh: chatProvider.loadChats,
+              onRefresh: () async => chatProvider.loadChats(),
               child: _buildBody(context, chatProvider, listingsProvider, filteredChats, myId),
             ),
           ),
